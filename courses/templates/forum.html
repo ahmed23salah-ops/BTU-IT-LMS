@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>المنتدى الأكاديمي - BTU IT</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg-color: #f4f7f6;
+            --card-bg: #ffffff;
+            --text-color: #2c3e50;
+            --text-muted: #6c757d;
+            --primary-color: #003366;
+            --button-bg: #0056b3;
+            --button-hover: #003d80;
+            --border-color: #e2e8f0;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, sans-serif; }
+        body { background-color: var(--bg-color); color: var(--text-color); min-height: 100vh; padding: 20px; }
+        .container { max-width: 900px; margin: 0 auto; background: var(--card-bg); padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border: 1px solid var(--border-color); }
+        h2 { color: var(--primary-color); margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; }
+        input[type="text"], input[type="file"], textarea { width: 100%; padding: 12px; border-radius: 6px; border: 1px solid var(--border-color); background: var(--bg-color); color: var(--text-color); font-size: 1rem; }
+        button { background: var(--button-bg); color: white; border: none; padding: 10px 20px; border-radius: 6px; font-weight: bold; cursor: pointer; }
+        button:hover { background: var(--button-hover); }
+        .question-card { background: var(--bg-color); border: 1px solid var(--border-color); padding: 20px; border-radius: 8px; margin-bottom: 15px; }
+        .question-card h3 a { color: var(--button-bg); text-decoration: none; }
+        .question-card h3 a:hover { text-decoration: underline; }
+        .meta { color: var(--text-muted); font-size: 0.85rem; margin-top: 8px; }
+        .back-link { display: inline-block; margin-bottom: 20px; color: var(--button-bg); text-decoration: none; font-weight: bold; }
+        .question-thumb { max-width: 150px; border-radius: 6px; margin-top: 10px; border: 1px solid var(--border-color); }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <a href="{% url 'home' %}" class="back-link"><i class="fa-solid fa-arrow-right"></i> العودة للرئيسية</a>
+    <h2><i class="fa-solid fa-comments"></i> المنتدى الأكاديمي لقسم تكنولوجيا المعلومات</h2>
+    <hr style="border-color: var(--border-color); margin-bottom: 25px;">
+
+    <!-- نموذج طرح سؤال جديد -->
+    {% if user.is_authenticated %}
+    <form method="POST" enctype="multipart/form-data" style="background: var(--bg-color); padding: 20px; border-radius: 8px; border: 1px solid var(--border-color); margin-bottom: 30px;">
+        {% csrf_token %}
+        <h3 style="margin-bottom: 15px; font-size: 1.1rem;">اطرح سؤالاً أو استفساراً جديداً:</h3>
+        <div class="form-group">
+            <label>عنوان السؤال:</label>
+            <input type="text" name="title" placeholder="اكتب عنواناً واضحاً لسؤالك..." required>
+        </div>
+        <div class="form-group">
+            <label>تفاصيل المشكلة أو السؤال:</label>
+            <textarea name="content" rows="4" placeholder="اشرح تفاصيل سؤالك أو مشكلتك البرمجية..." required></textarea>
+        </div>
+        <div class="form-group">
+            <label>صورة مرفقة (اختياري):</label>
+            <input type="file" name="image" accept="image/*">
+        </div>
+        <button type="submit">نشر السؤال 🚀</button>
+    </form>
+    {% else %}
+    <p style="padding: 15px; background: #fff3cd; color: #856404; border-radius: 6px; margin-bottom: 20px;">
+        يجب عليك <a href="{% url 'login' %}" style="color: var(--button-bg); font-weight: bold;">تسجيل الدخول</a> لتتمكن من طرح سؤال أو الرد على الزملاء.
+    </p>
+    {% endif %}
+
+    <h3 style="margin-bottom: 15px;">الأسئلة والنقاشات الأكاديمية:</h3>
+    
+    {% for q in questions %}
+        <div class="question-card">
+            <h3><a href="{% url 'question_detail' q.id %}">{{ q.title }}</a></h3>
+            <p style="margin-top: 8px; color: var(--text-color);">{{ q.content|truncatechars:150 }}</p>
+            
+            {% if q.image %}
+                <div>
+                    <img src="{{ q.image.url }}" alt="صورة مرفقة" class="question-thumb">
+                </div>
+            {% endif %}
+
+            <div class="meta">
+                <span><i class="fa-solid fa-user"></i> بواسطة: {{ q.author.username }}</span> | 
+                <span><i class="fa-solid fa-clock"></i> {{ q.created_at|date:"Y-m-d | H:i" }}</span> |
+                <span><i class="fa-solid fa-reply"></i> الردود ({{ q.answers.count }})</span>
+            </div>
+        </div>
+    {% empty %}
+        <p style="color: var(--text-muted); text-align: center; padding: 20px;">لا توجد أسئلة حتى الآن. كن أول من يبدأ النقاش!</p>
+    {% endfor %}
+</div>
+
+</body>
+</html>

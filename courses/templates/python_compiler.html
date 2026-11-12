@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>محرر أكواد منصة BTU IT</title>
+
+    <!-- 1. تحميل محرك بايثون Pyodide -->
+    <script src="https://cdn.jsdelivr.net/pyodide/v0.23.4/full/pyodide.js"></script>
+
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #0f172a;
+            color: #f8fafc;
+            margin: 0;
+            padding: 20px;
+            direction: rtl;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: #1e293b;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+        }
+
+        h2 {
+            margin-top: 0;
+            color: #38bdf8;
+            border-bottom: 2px solid #334155;
+            padding-bottom: 10px;
+        }
+
+        .editor-label, .output-label {
+            font-weight: bold;
+            margin-bottom: 8px;
+            display: block;
+            color: #94a3b8;
+        }
+
+        textarea {
+            width: 100%;
+            height: 220px;
+            background-color: #0f172a;
+            color: #38bdf8;
+            border: 1px solid #334155;
+            border-radius: 8px;
+            padding: 15px;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 16px;
+            box-sizing: border-box;
+            resize: vertical;
+            outline: none;
+        }
+
+        .btn-group {
+            margin: 15px 0;
+            display: flex;
+            gap: 10px;
+        }
+
+        button {
+            padding: 10px 25px;
+            font-size: 16px;
+            font-weight: bold;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .run-btn {
+            background-color: #10b981;
+            color: #fff;
+        }
+
+        .run-btn:hover {
+            background-color: #059669;
+        }
+
+        .clear-btn {
+            background-color: #64748b;
+            color: #fff;
+        }
+
+        .clear-btn:hover {
+            background-color: #475569;
+        }
+
+        .output-box {
+            width: 100%;
+            min-height: 120px;
+            background-color: #000;
+            color: #4ade80;
+            border: 1px solid #334155;
+            border-radius: 8px;
+            padding: 15px;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 15px;
+            box-sizing: border-box;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>محرر أكواد بايثون - منصة BTU IT</h2>
+
+    <label class="editor-label" for="code-editor">اكتب كود البايثون هنا:</label>
+    <textarea id="code-editor" placeholder="اكتب كودك هنا...&#10;مثال:&#10;print('أهلاً بكم في جامعة بني سويف التكنولوجية')">print("Hello BTU IT Department!")</textarea>
+
+    <div class="btn-group">
+        <button class="run-btn" onclick="runCode()">تشغيل الكود 🚀</button>
+        <button class="clear-btn" onclick="clearOutput()">مسح الشاشة 🧹</button>
+    </div>
+
+    <label class="output-label">النتيجة (Output):</label>
+    <div id="output" class="output-box">جاري تجهيز بيئة التشغيل...</div>
+</div>
+
+<!-- 2. كود الـ JavaScript للربط والتنفيذ -->
+<script>
+    let pyodideInstance = null;
+
+    // تحميل محرك Pyodide فور فتح الصفحة
+    async function initPyodide() {
+        const outputDiv = document.getElementById("output");
+        try {
+            pyodideInstance = await loadPyodide();
+            outputDiv.innerText = "جاهز لتشغيل الكود! اضغط على 'تشغيل الكود'.";
+        } catch (err) {
+            outputDiv.innerText = "حدث خطأ أثناء تحميل محرك بايثون: " + err;
+        }
+    }
+    initPyodide();
+
+    // تشغيل الكود المدخل
+    async function runCode() {
+        const outputDiv = document.getElementById("output");
+        const code = document.getElementById("code-editor").value;
+
+        if (!pyodideInstance) {
+            outputDiv.innerText = "جاري تحميل المحرك... انتظر ثواني واضغط مجدداً.";
+            return;
+        }
+
+        outputDiv.innerText = "جاري التنفيذ...";
+
+        try {
+            pyodideInstance.runPython(`
+                import sys
+                import io
+                sys.stdout = io.StringIO()
+            `);
+
+            await pyodideInstance.runPythonAsync(code);
+
+            let stdout = pyodideInstance.runPython("sys.stdout.getvalue()");
+            outputDiv.innerText = stdout || "تم تنفيذ الكود بنجاح (لا توجد مخرجات print).";
+        } catch (err) {
+            outputDiv.innerText = "خطأ في البرمجة:\n" + err;
+        }
+    }
+
+    // مسح المخرجات
+    function clearOutput() {
+        document.getElementById("output").innerText = "";
+    }
+</script>
+
+</body>
+</html>

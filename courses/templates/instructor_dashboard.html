@@ -1,0 +1,235 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة التحكم الشاملة | جامعة بني سويف التكنولوجية</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg-color: #f4f7f6;
+            --card-bg: #ffffff;
+            --text-color: #2c3e50;
+            --text-muted: #6c757d;
+            --primary-color: #003366;
+            --accent-color: #ffc107;
+            --button-bg: #0056b3;
+            --button-hover: #003d80;
+            --border-color: #e2e8f0;
+        }
+
+        [data-theme="dark"] {
+            --bg-color: #121824;
+            --card-bg: #1e293b;
+            --text-color: #f8fafc;
+            --text-muted: #94a3b8;
+            --primary-color: #1e293b;
+            --accent-color: #f59e0b;
+            --button-bg: #2563eb;
+            --button-hover: #1d4ed8;
+            --border-color: #334155;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; transition: background-color 0.3s, color 0.3s; }
+        body { background-color: var(--bg-color); color: var(--text-color); min-height: 100vh; display: flex; flex-direction: column; }
+
+        header { background-color: var(--primary-color); color: white; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+        .logo-container { display: flex; align-items: center; gap: 15px; }
+        .university-info h1 { font-size: 1.2rem; font-weight: 700; }
+        .university-info p { font-size: 0.85rem; color: var(--accent-color); font-weight: bold; }
+
+        .container { max-width: 1100px; margin: 30px auto; padding: 0 20px; width: 100%; }
+        .back-link { display: inline-block; margin-bottom: 20px; color: var(--button-bg); text-decoration: none; font-weight: bold; }
+        .back-link:hover { text-decoration: underline; }
+
+        /* Dashboard Navigation Tabs */
+        .dash-tabs { display: flex; gap: 10px; margin-bottom: 25px; flex-wrap: wrap; border-bottom: 2px solid var(--border-color); padding-bottom: 10px; }
+        .tab-btn { background: var(--card-bg); border: 1px solid var(--border-color); color: var(--text-color); padding: 12px 20px; border-radius: 8px 8px 0 0; cursor: pointer; font-weight: bold; display: flex; align-items: center; gap: 8px; }
+        .tab-btn.active { background: var(--button-bg); color: white; border-color: var(--button-bg); }
+        .tab-btn:hover:not(.active) { background: rgba(0, 86, 179, 0.1); }
+
+        /* Tab Content Sections */
+        .tab-content { display: none; background: var(--card-bg); border: 1px solid var(--border-color); padding: 30px; border-radius: 0 0 12px 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+        .tab-content.active { display: block; }
+        .tab-content h3 { margin-bottom: 20px; color: var(--primary-color); border-bottom: 2px solid var(--accent-color); padding-bottom: 8px; display: inline-block; }
+
+        .form-group { margin-bottom: 18px; text-align: right; }
+        .form-group label { display: block; margin-bottom: 6px; font-weight: bold; font-size: 0.95rem; }
+        .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 11px; border-radius: 6px; border: 1px solid var(--border-color); background-color: var(--bg-color); color: var(--text-color); font-size: 0.95rem; }
+        
+        .btn-submit { background-color: var(--button-bg); color: white; border: none; padding: 12px 25px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 1rem; }
+        .btn-submit:hover { background-color: var(--button-hover); }
+
+        footer { margin-top: auto; text-align: center; padding: 20px; font-size: 0.85rem; color: var(--text-muted); border-top: 1px solid var(--border-color); }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo-container">
+            <div class="university-info">
+                <h1>لوحة التحكم الشاملة لمركز الإدارة والأكاديميين</h1>
+                <p><i class="fa-solid fa-sliders"></i> إدارة محتوى المنصة والإشعارات</p>
+            </div>
+        </div>
+        <a href="{% url 'home' %}" style="color: white; text-decoration: none; font-weight: bold;"><i class="fa-solid fa-house"></i> العودة للرئيسية</a>
+    </header>
+
+    <div class="container">
+        <a href="{% url 'home' %}" class="back-link"><i class="fa-solid fa-arrow-right"></i> الرجوع للصفحة الرئيسية</a>
+
+        <!-- التبويبات للتحكم بالأقسام -->
+        <div class="dash-tabs">
+            <button class="tab-btn active" onclick="switchTab('assignments-tab', this)">
+                <i class="fa-solid fa-file-lines"></i> إدارة الواجبات والتكليفات
+            </button>
+            <button class="tab-btn" onclick="switchTab('courses-tab', this)">
+                <i class="fa-solid fa-book-open"></i> رفع المحاضرات والملفات
+            </button>
+            <button class="tab-btn" onclick="switchTab('events-tab', this)">
+                <i class="fa-solid fa-calendar-star"></i> إدارة الأنشطة والفعاليات
+            </button>
+            <button class="tab-btn" onclick="switchTab('notifications-tab', this)">
+                <i class="fa-solid fa-bell"></i> قسم التنبيهات والإشعارات
+            </button>
+        </div>
+
+        <!-- 1. قسم الواجبات والتكليفات (محدث بقائمة المواد) -->
+        <div id="assignments-tab" class="tab-content active">
+            <h3><i class="fa-solid fa-plus-circle"></i> نشر تكليف أو واجب جديد</h3>
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                <input type="hidden" name="section_type" value="assignment">
+                <div class="form-group">
+                    <label>عنوان التكليف:</label>
+                    <input type="text" name="title" required placeholder="مثال: الواجب الأول - تصميم قواعد البيانات">
+                </div>
+                <div class="form-group">
+                    <label>اختر المادة الدراسية:</label>
+                    <select name="course" required>
+                        <option value="Python">أساسيات البرمجة (Python)</option>
+                        <option value="Cyber Security">مقدمة الأمن السيبراني</option>
+                        <option value="IT Essentials">أساسيات تكنولوجيا المعلومات</option>
+                        <option value="Math">الرياضيات الهندسية (Math)</option>
+                        <option value="Physics">الفيزياء العامة (Physics)</option>
+                        <option value="English">اللغة الإنجليزية</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>تعليمات التكليف:</label>
+                    <textarea name="description" rows="3" required placeholder="اكتب التفاصيل والمطلوب من الطالب..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label>إرفاق ملف الشيت أو الواجب (PDF - اختيارى):</label>
+                    <input type="file" name="assignment_file" accept=".pdf">
+                </div>
+                <div class="form-group">
+                    <label>آخر موعد للتسليم (Deadline):</label>
+                    <input type="date" name="deadline" required>
+                </div>
+                <button type="submit" class="btn-submit">نشر التكليف للطلاب</button>
+            </form>
+        </div>
+
+        <!-- 2. قسم المحاضرات وملفات الشرح (محدث بقائمة المواد) -->
+        <div id="courses-tab" class="tab-content">
+            <h3><i class="fa-solid fa-cloud-arrow-up"></i> رفع ملف شرح أو محاضرة جديدة</h3>
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                <input type="hidden" name="section_type" value="course_material">
+                <div class="form-group">
+                    <label>اسم المحاضرة / الملف:</label>
+                    <input type="text" name="lecture_title" required placeholder="مثال: المحاضرة الثالثة - Python Syntax">
+                </div>
+                <div class="form-group">
+                    <label>اختر المادة الدراسية:</label>
+                    <select name="course_name" required>
+                        <option value="Python">أساسيات البرمجة (Python)</option>
+                        <option value="Cyber Security">مقدمة الأمن السيبراني</option>
+                        <option value="IT Essentials">أساسيات تكنولوجيا المعلومات</option>
+                        <option value="Math">الرياضيات الهندسية (Math)</option>
+                        <option value="Physics">الفيزياء العامة (Physics)</option>
+                        <option value="English">اللغة الإنجليزية</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>ملف الشرح (PDF / Zip / PPT):</label>
+                    <input type="file" name="lecture_file" required>
+                </div>
+                <button type="submit" class="btn-submit">نشر وتنزيل المحاضرة</button>
+            </form>
+        </div>
+
+        <!-- 3. قسم الأنشطة والفعاليات -->
+        <div id="events-tab" class="tab-content">
+            <h3><i class="fa-solid fa-bullhorn"></i> إضافة نشاط أو فعالية جديدة</h3>
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                <input type="hidden" name="section_type" value="event">
+                <div class="form-group">
+                    <label>عنوان الفعالية أو النشاط:</label>
+                    <input type="text" name="event_title" required placeholder="مثال: ورشة عمل عن الذكاء الاصطناعي">
+                </div>
+                <div class="form-group">
+                    <label>تاريخ ومكان الفعالية:</label>
+                    <input type="text" name="event_location" required placeholder="مثال: الأحد القادم - مدرج 1">
+                </div>
+                <div class="form-group">
+                    <label>تفاصيل الفعالية:</label>
+                    <textarea name="event_details" rows="3" required placeholder="اكتب نبذة عن النشاط..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label>إرفاق صورة أو بوستر للفعالية (اختياري):</label>
+                    <input type="file" name="event_image" accept="image/*">
+                </div>
+                <button type="submit" class="btn-submit">إضافة الفعالية للجدول</button>
+            </form>
+        </div>
+
+        <!-- 4. قسم التنبيهات والإشعارات الفورية -->
+        <div id="notifications-tab" class="tab-content">
+            <h3><i class="fa-solid fa-paper-plane"></i> إرسال إشعار عام للطلاب</h3>
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                <input type="hidden" name="section_type" value="notification">
+                <div class="form-group">
+                    <label>نوع التنبيه:</label>
+                    <select name="notif_type">
+                        <option value="important">تنبيه هام عاجل 🚨</option>
+                        <option value="assignment">تذكير بتكليف 📝</option>
+                        <option value="schedule">تعديل جدول 📅</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>نص الإشعار:</label>
+                    <textarea name="notif_text" rows="3" required placeholder="اكتب نص التنبيه الذي سيظهر في شريط الإشعارات أعلى الصفحة..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label>إرفاق صورة مع الإشعار (اختياري):</label>
+                    <input type="file" name="notif_image" accept="image/*">
+                </div>
+                <button type="submit" class="btn-submit">بث الإشعار فوراً</button>
+            </form>
+        </div>
+
+    </div>
+
+    <footer>
+        <p>جميع الحقوق محفوظة &copy; 2026 - جامعة بني سويف التكنولوجية (قسم تكنولوجيا المعلومات)</p>
+    </footer>
+
+    <script>
+        function switchTab(tabId, btn) {
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            document.querySelectorAll('.tab-btn').forEach(button => {
+                button.classList.remove('active');
+            });
+            document.getElementById(tabId).classList.add('active');
+            btn.classList.add('active');
+        }
+    </script>
+</body>
+</html>

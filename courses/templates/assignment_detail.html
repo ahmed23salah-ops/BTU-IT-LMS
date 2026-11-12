@@ -1,0 +1,106 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تكليفات {{ course_title }} | جامعة بني سويف التكنولوجية</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg-color: #f4f7f6;
+            --card-bg: #ffffff;
+            --text-color: #2c3e50;
+            --text-muted: #6c757d;
+            --primary-color: #003366;
+            --accent-color: #ffc107;
+            --button-bg: #0056b3;
+            --button-hover: #003d80;
+            --border-color: #e2e8f0;
+        }
+        [data-theme="dark"] {
+            --bg-color: #121824;
+            --card-bg: #1e293b;
+            --text-color: #f8fafc;
+            --text-muted: #94a3b8;
+            --primary-color: #1e293b;
+            --accent-color: #f59e0b;
+            --button-bg: #2563eb;
+            --button-hover: #1d4ed8;
+            --border-color: #334155;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, sans-serif; }
+        body { background-color: var(--bg-color); color: var(--text-color); min-height: 100vh; display: flex; flex-direction: column; }
+        header { background-color: var(--primary-color); color: white; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; }
+        .back-btn { background: rgba(255,255,255,0.15); color: white; padding: 8px 15px; border-radius: 6px; text-decoration: none; font-size: 0.9rem; }
+        .back-btn:hover { background: rgba(255,255,255,0.3); }
+        .container { max-width: 900px; margin: 40px auto; padding: 0 20px; width: 100%; flex: 1; }
+        h2 { margin-bottom: 25px; color: var(--primary-color); display: flex; align-items: center; gap: 12px; font-size: 1.6rem; }
+        .assignment-card { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 10px; padding: 25px; margin-bottom: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.03); }
+        .assignment-title { font-size: 1.2rem; font-weight: bold; margin-bottom: 8px; color: var(--text-color); }
+        .assignment-desc { font-size: 0.95rem; color: var(--text-muted); margin-bottom: 12px; line-height: 1.5; }
+        .assignment-meta { font-size: 0.85rem; margin-bottom: 15px; color: var(--text-color); display: flex; gap: 20px; }
+        .download-btn { background-color: var(--button-bg); color: white; padding: 8px 15px; border-radius: 6px; text-decoration: none; font-size: 0.85rem; display: inline-flex; align-items: center; gap: 6px; font-weight: bold; margin-bottom: 15px; }
+        .download-btn:hover { background-color: var(--button-hover); }
+        .upload-box { border: 2px dashed var(--border-color); padding: 15px; border-radius: 8px; background-color: var(--bg-color); text-align: right; }
+        .submit-hw-btn { background-color: var(--button-bg); color: white; border: none; padding: 7px 16px; border-radius: 6px; font-weight: bold; cursor: pointer; margin-top: 8px; }
+        .empty-box { text-align: center; padding: 50px; background: var(--card-bg); border-radius: 10px; border: 1px solid var(--border-color); color: var(--text-muted); }
+        footer { text-align: center; padding: 20px; font-size: 0.85rem; color: var(--text-muted); border-top: 1px solid var(--border-color); }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>تكليفات مادة: {{ course_title }}</h1>
+        <a href="{% url 'assignments' %}" class="back-btn"><i class="fa-solid fa-arrow-right"></i> عودة للتكليفات</a>
+    </header>
+
+    <div class="container">
+        <h2><i class="fa-solid fa-file-lines"></i> المهام والواجبات المطلوبة للمادة</h2>
+
+        {% if assignments %}
+            {% for assignment in assignments %}
+                <div class="assignment-card">
+                    <div class="assignment-title"><i class="fa-solid fa-circle-chevron-left" style="color: var(--accent-color);"></i> {{ assignment.title }}</div>
+                    <div class="assignment-desc">{{ assignment.description }}</div>
+                    <div class="assignment-meta">
+                        <div><i class="fa-solid fa-calendar-days"></i> <strong>الموعد النهائي:</strong> {{ assignment.deadline }}</div>
+                    </div>
+
+                    {% if assignment.file_url %}
+                        <a href="{{ assignment.file_url }}" class="download-btn" download>
+                            <i class="fa-solid fa-download"></i> تحميل ملف الواجب (PDF)
+                        </a>
+                    {% endif %}
+
+                    <form onsubmit="handleUpload(event, '{{ assignment.title }}')" class="upload-box" enctype="multipart/form-data">
+                        <label style="display: block; margin-bottom: 6px; font-size: 0.85rem; font-weight: bold;">رفع ملف الحل الخاص بك:</label>
+                        <input type="file" required style="font-size: 0.85rem; color: var(--text-color);">
+                        <br>
+                        <button type="submit" class="submit-hw-btn">
+                            <i class="fa-solid fa-cloud-arrow-up"></i> إرسال الحل
+                        </button>
+                    </form>
+                </div>
+            {% endfor %}
+        {% else %}
+            <div class="empty-box">
+                <i class="fa-solid fa-face-smile" style="font-size: 3rem; margin-bottom: 12px; color: var(--text-muted);"></i>
+                <p>لا توجد تكليفات مرفوعة لهذه المادة حتى الآن.</p>
+            </div>
+        {% endif %}
+    </div>
+
+    <footer>
+        <p>جميع الحقوق محفوظة &copy; 2026 - جامعة بني سويف التكنولوجية</p>
+    </footer>
+
+    <script>
+        function handleUpload(e, title) {
+            e.preventDefault();
+            alert(`تم رفع حل التكليف "${title}" بنجاح وإرساله للأستاذ المسؤول!`);
+            e.target.reset();
+        }
+    </script>
+</body>
+</html>

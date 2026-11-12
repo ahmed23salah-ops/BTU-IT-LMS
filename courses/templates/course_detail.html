@@ -1,0 +1,85 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ course_title }} | جامعة بني سويف التكنولوجية</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg-color: #f4f7f6;
+            --card-bg: #ffffff;
+            --text-color: #2c3e50;
+            --text-muted: #6c757d;
+            --primary-color: #003366;
+            --accent-color: #ffc107;
+            --button-bg: #0056b3;
+            --button-hover: #003d80;
+            --border-color: #e2e8f0;
+        }
+        [data-theme="dark"] {
+            --bg-color: #121824;
+            --card-bg: #1e293b;
+            --text-color: #f8fafc;
+            --text-muted: #94a3b8;
+            --primary-color: #1e293b;
+            --accent-color: #f59e0b;
+            --button-bg: #2563eb;
+            --button-hover: #1d4ed8;
+            --border-color: #334155;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, sans-serif; }
+        body { background-color: var(--bg-color); color: var(--text-color); min-height: 100vh; display: flex; flex-direction: column; }
+        header { background-color: var(--primary-color); color: white; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; }
+        .back-btn { background: rgba(255,255,255,0.15); color: white; padding: 8px 15px; border-radius: 6px; text-decoration: none; font-size: 0.9rem; }
+        .back-btn:hover { background: rgba(255,255,255,0.3); }
+        .container { max-width: 900px; margin: 40px auto; padding: 0 20px; width: 100%; flex: 1; }
+        h2 { margin-bottom: 25px; color: var(--primary-color); display: flex; align-items: center; gap: 12px; font-size: 1.6rem; }
+        .file-card { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 10px; padding: 20px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 10px rgba(0,0,0,0.03); }
+        .file-info h4 { font-size: 1.1rem; margin-bottom: 6px; color: var(--text-color); }
+        .file-info p { font-size: 0.85rem; color: var(--text-muted); }
+        .download-btn { background-color: var(--button-bg); color: white; padding: 10px 18px; border-radius: 6px; text-decoration: none; font-size: 0.9rem; display: flex; align-items: center; gap: 8px; font-weight: bold; }
+        .download-btn:hover { background-color: var(--button-hover); }
+        .empty-box { text-align: center; padding: 50px; background: var(--card-bg); border-radius: 10px; border: 1px solid var(--border-color); color: var(--text-muted); }
+        footer { text-align: center; padding: 20px; font-size: 0.85rem; color: var(--text-muted); border-top: 1px solid var(--border-color); }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>{{ course_title }}</h1>
+        <a href="{% url 'courses' %}" class="back-btn"><i class="fa-solid fa-arrow-right"></i> عودة للمقررات</a>
+    </header>
+
+    <div class="container">
+        <h2><i class="fa-solid fa-folder-open"></i> المحاضرات والملفات المتاحة للمادة</h2>
+
+        {% if files %}
+            {% for file in files %}
+                <div class="file-card">
+                    <div class="file-info">
+                        <h4><i class="fa-solid fa-file-pdf" style="color: #dc3545; margin-left: 8px;"></i> {{ file.title }}</h4>
+                        <p>اسم الملف على النظام: {{ file.filename }}</p>
+                    </div>
+                    <div>
+                        <a href="{{ file.file_url }}" class="download-btn" download>
+                            <i class="fa-solid fa-download"></i> تحميل الـ PDF
+                        </a>
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <div class="empty-box">
+                <i class="fa-solid fa-file-circle-exclamation" style="font-size: 3rem; margin-bottom: 12px; color: var(--text-muted);"></i>
+                <p>لا توجد محاضرات مرفوعة لهذه المادة حتى الآن. يرجى المتابعة لاحقاً.</p>
+            </div>
+        {% endif %}
+    </div>
+
+    <footer>
+        <p>جميع الحقوق محفوظة &copy; 2026 - جامعة بني سويف التكنولوجية</p>
+    </footer>
+
+</body>
+</html>

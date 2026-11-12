@@ -1,0 +1,278 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>المقررات الدراسية | جامعة بني سويف التكنولوجية</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg-color: #f4f7f6;
+            --card-bg: #ffffff;
+            --text-color: #2c3e50;
+            --text-muted: #6c757d;
+            --primary-color: #003366;
+            --accent-color: #ffc107;
+            --button-bg: #0056b3;
+            --button-hover: #003d80;
+            --border-color: #e2e8f0;
+        }
+
+        [data-theme="dark"] {
+            --bg-color: #121824;
+            --card-bg: #1e293b;
+            --text-color: #f8fafc;
+            --text-muted: #94a3b8;
+            --primary-color: #1e293b;
+            --accent-color: #f59e0b;
+            --button-bg: #2563eb;
+            --button-hover: #1d4ed8;
+            --border-color: #334155;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; transition: background-color 0.3s, color 0.3s; }
+        body { background-color: var(--bg-color); color: var(--text-color); min-height: 100vh; display: flex; flex-direction: column; }
+
+        header { background-color: var(--primary-color); color: white; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); position: sticky; top: 0; z-index: 100; }
+        .logo-container { display: flex; align-items: center; gap: 15px; }
+        .university-info h1 { font-size: 1.2rem; font-weight: 700; }
+        .university-info p { font-size: 0.85rem; color: var(--accent-color); font-weight: bold; }
+
+        .nav-controls { display: flex; align-items: center; gap: 12px; }
+        .theme-toggle { background: rgba(255, 255, 255, 0.15); border: none; color: white; padding: 8px 12px; border-radius: 20px; cursor: pointer; display: flex; align-items: center; gap: 6px; font-size: 0.9rem; }
+        .theme-toggle:hover { background: rgba(255, 255, 255, 0.3); }
+
+        .back-btn { background-color: transparent; color: white; border: 1.5px solid white; padding: 6px 14px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 0.9rem; display: inline-flex; align-items: center; gap: 6px; }
+        .back-btn:hover { background-color: white; color: var(--primary-color); }
+
+        .hero { text-align: center; padding: 30px 20px 10px; max-width: 900px; margin: 0 auto; }
+        .hero h2 { font-size: 1.8rem; margin-bottom: 8px; color: var(--text-color); }
+        .hero p { font-size: 1rem; color: var(--text-muted); }
+
+        .section-title { max-width: 1200px; margin: 30px auto 10px; padding: 0 20px; width: 100%; font-size: 1.3rem; color: var(--primary-color); display: flex; align-items: center; gap: 10px; }
+        
+        .courses-grid { max-width: 1200px; margin: 15px auto 40px; padding: 0 20px; display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 25px; width: 100%; }
+        .course-card { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px; padding: 25px; display: flex; flex-direction: column; justify-content: space-between; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+        .course-card:hover { transform: translateY(-5px); box-shadow: 0 8px 25px rgba(0,0,0,0.1); }
+        
+        .course-header { display: flex; align-items: center; gap: 15px; margin-bottom: 15px; }
+        .course-icon { font-size: 2rem; color: var(--button-bg); background: rgba(0, 86, 179, 0.1); padding: 12px; border-radius: 10px; }
+        .course-title h3 { font-size: 1.1rem; margin-bottom: 4px; }
+        .course-title span { font-size: 0.8rem; color: var(--accent-color); font-weight: bold; background: var(--primary-color); padding: 2px 8px; border-radius: 10px; }
+
+        .course-details { margin-bottom: 20px; font-size: 0.9rem; color: var(--text-muted); line-height: 1.6; }
+        .course-meta { font-size: 0.85rem; margin-bottom: 15px; border-top: 1px dashed var(--border-color); padding-top: 10px; }
+        .course-meta div { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; color: var(--text-color); }
+
+        .download-btn { background-color: var(--button-bg); color: white; padding: 10px; border-radius: 6px; text-decoration: none; text-align: center; font-weight: bold; display: flex; justify-content: center; align-items: center; gap: 8px; border: none; cursor: pointer; width: 100%; }
+        .download-btn:hover { background-color: var(--button-hover); }
+
+        footer { margin-top: auto; text-align: center; padding: 20px; font-size: 0.85rem; color: var(--text-muted); border-top: 1px solid var(--border-color); }
+    </style>
+</head>
+<body>
+
+    <!-- Header Section -->
+    <header>
+        <div class="logo-container">
+            <img src="{% static 'images/btu_logo.jpg' %}" alt="شعار الجامعة" style="width: 55px; height: 55px; object-fit: contain; background: white; border-radius: 50%; padding: 2px;">
+            <div class="university-info">
+                <h1>جامعة بني سويف التكنولوجية</h1>
+                <p><i class="fa-solid fa-code-branch"></i> برنامج تكنولوجيا المعلومات (IT)</p>
+            </div>
+        </div>
+        <div class="nav-controls">
+            <button class="theme-toggle" id="themeToggleBtn" onclick="toggleTheme()">
+                <i class="fa-solid fa-moon" id="themeIcon"></i>
+                <span id="themeText">الوضع الداكن</span>
+            </button>
+            <a href="{% url 'home' %}" class="back-btn"><i class="fa-solid fa-arrow-right"></i> الرئيسية</a>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <h2>المقررات والمناهج الدراسية (الفرقة الأولى)</h2>
+        <p>المناهج الرسمية والمحاضرات الخاصة ببرنامج تكنولوجيا المعلومات للعام الأكاديمي 2026-2027.</p>
+    </section>
+
+    <!-- Courses Grid -->
+    <main class="courses-grid">
+
+        <!-- 1. Python -->
+        <div class="course-card">
+            <div>
+                <div class="course-header">
+                    <i class="fa-brands fa-python course-icon"></i>
+                    <div class="course-title">
+                        <h3>أساسيات البرمجة (Python)</h3>
+                        <span>مادة أساسية</span>
+                    </div>
+                </div>
+                <div class="course-details">
+                    دراسة المفاهيم البرمجية، المتغيرات، الدوال، وتطبيقات العملي والسكاشن للغة بايثون.
+                </div>
+                <div class="course-meta">
+                    <div><i class="fa-solid fa-chalkboard-user"></i> <strong>المحاضر:</strong> د. أسامة مختار</div>
+                    <div><i class="fa-solid fa-user-pen"></i> <strong>المعيد/السكشن:</strong> د. ربيع مسعود / م. منى عبد العزيز</div>
+                    <div><i class="fa-solid fa-location-dot"></i> <strong>المدرج/المعمل:</strong> A101 / A2-05</div>
+                </div>
+            </div>
+            <a href="{% url 'course_detail' 'Python' %}" class="download-btn">
+                <i class="fa-solid fa-arrow-left"></i> دخول لصفحة ومحاضرات المادة
+            </a>
+        </div>
+
+        <!-- 2. Cyber Security -->
+        <div class="course-card">
+            <div>
+                <div class="course-header">
+                    <i class="fa-solid fa-shield-halved course-icon"></i>
+                    <div class="course-title">
+                        <h3>مقدمة الأمن السيبراني</h3>
+                        <span>متطلب تخصصي</span>
+                    </div>
+                </div>
+                <div class="course-details">
+                    مبادئ حماية البيانات والشبكات، أنواع التهديدات، وتأمين الأنظمة الرقمية.
+                </div>
+                <div class="course-meta">
+                    <div><i class="fa-solid fa-chalkboard-user"></i> <strong>المحاضر:</strong> د. عبير أيوب</div>
+                    <div><i class="fa-solid fa-location-dot"></i> <strong>المدرج:</strong> A329</div>
+                </div>
+            </div>
+            <a href="{% url 'course_detail' 'Cyber Security' %}" class="download-btn">
+                <i class="fa-solid fa-arrow-left"></i> دخول لصفحة ومحاضرات المادة
+            </a>
+        </div>
+
+        <!-- 3. IT Essentials -->
+        <div class="course-card">
+            <div>
+                <div class="course-header">
+                    <i class="fa-solid fa-laptop-code course-icon"></i>
+                    <div class="course-title">
+                        <h3>أساسيات تكنولوجيا المعلومات</h3>
+                        <span>مادة عملية ونظرية</span>
+                    </div>
+                </div>
+                <div class="course-details">
+                    مكونات الحاسوب، أساسيات الأنظمة، تجميع الأجهزة وتكوين الشبكات (Lab & Theory).
+                </div>
+                <div class="course-meta">
+                    <div><i class="fa-solid fa-chalkboard-user"></i> <strong>المحاضر:</strong> د. أسامة مختار</div>
+                    <div><i class="fa-solid fa-user-pen"></i> <strong>المعيد:</strong> م. مى محمود</div>
+                    <div><i class="fa-solid fa-location-dot"></i> <strong>المدرج/المعمل:</strong> A325 / A1-04</div>
+                </div>
+            </div>
+            <a href="{% url 'course_detail' 'IT Essentials' %}" class="download-btn">
+                <i class="fa-solid fa-arrow-left"></i> دخول لصفحة ومحاضرات المادة
+            </a>
+        </div>
+
+        <!-- 4. Math -->
+        <div class="course-card">
+            <div>
+                <div class="course-header">
+                    <i class="fa-solid fa-calculator course-icon"></i>
+                    <div class="course-title">
+                        <h3>الرياضيات الهندسية (Math)</h3>
+                        <span>متطلب علمي</span>
+                    </div>
+                </div>
+                <div class="course-details">
+                    التفاضل والتكامل، الجبر الخطي، والمصفوفات المطبقة في مجالات الحاسب الآلي.
+                </div>
+                <div class="course-meta">
+                    <div><i class="fa-solid fa-chalkboard-user"></i> <strong>المحاضر:</strong> د. أيمن زين</div>
+                    <div><i class="fa-solid fa-user-pen"></i> <strong>المعيد:</strong> م. أمال كمال</div>
+                    <div><i class="fa-solid fa-location-dot"></i> <strong>المدرج:</strong> A326 / A209</div>
+                </div>
+            </div>
+            <a href="{% url 'course_detail' 'Math' %}" class="download-btn">
+                <i class="fa-solid fa-arrow-left"></i> دخول لصفحة ومحاضرات المادة
+            </a>
+        </div>
+
+        <!-- 5. Physics -->
+        <div class="course-card">
+            <div>
+                <div class="course-header">
+                    <i class="fa-solid fa-atom course-icon"></i>
+                    <div class="course-title">
+                        <h3>الفيزياء العامة (Physics)</h3>
+                        <span>متطلب علمي</span>
+                    </div>
+                </div>
+                <div class="course-details">
+                    الدوائر الكهربائية، الخصائص الفيزيائية لأشباه الموصلات، والمكونات الإلكترونية.
+                </div>
+                <div class="course-meta">
+                    <div><i class="fa-solid fa-chalkboard-user"></i> <strong>المحاضر:</strong> د. مصطفى رشاد / د. امنه قطب</div>
+                    <div><i class="fa-solid fa-location-dot"></i> <strong>المدرج:</strong> A325 / A313</div>
+                </div>
+            </div>
+            <a href="{% url 'course_detail' 'Physics' %}" class="download-btn">
+                <i class="fa-solid fa-arrow-left"></i> دخول لصفحة ومحاضرات المادة
+            </a>
+        </div>
+
+        <!-- 6. Technical English -->
+        <div class="course-card">
+            <div>
+                <div class="course-header">
+                    <i class="fa-solid fa-language course-icon"></i>
+                    <div class="course-title">
+                        <h3>اللغة الإنجليزية</h3>
+                        <span>متطلب لغوي</span>
+                    </div>
+                </div>
+                <div class="course-details">
+                    مصطلحات تكنولوجيا المعلومات، محادثات تقنية، وكتابة التقارير الأكاديمية بالإنجليزية.
+                </div>
+                <div class="course-meta">
+                    <div><i class="fa-solid fa-chalkboard-user"></i> <strong>المحاضر:</strong> د. هبه السعيد</div>
+                    <div><i class="fa-solid fa-user-pen"></i> <strong>المعيد:</strong> د. داليا</div>
+                    <div><i class="fa-solid fa-location-dot"></i> <strong>المدرج:</strong> A115 / A209</div>
+                </div>
+            </div>
+            <a href="{% url 'course_detail' 'English' %}" class="download-btn">
+                <i class="fa-solid fa-arrow-left"></i> دخول لصفحة ومحاضرات المادة
+            </a>
+        </div>
+
+    </main>
+
+    <footer>
+        <p>جميع الحقوق محفوظة &copy; 2026 - جامعة بني سويف التكنولوجية (قسم تكنولوجيا المعلومات)</p>
+    </footer>
+
+    <!-- JavaScript for Theme -->
+    <script>
+        function toggleTheme() {
+            const body = document.body;
+            const themeIcon = document.getElementById('themeIcon');
+            const themeText = document.getElementById('themeText');
+            
+            if (body.getAttribute('data-theme') === 'dark') {
+                body.removeAttribute('data-theme');
+                themeIcon.className = 'fa-solid fa-moon';
+                themeText.textContent = 'الوضع الداكن';
+                localStorage.setItem('theme', 'light');
+            } else {
+                body.setAttribute('data-theme', 'dark');
+                themeIcon.className = 'fa-solid fa-sun';
+                themeText.textContent = 'الوضع المضيء';
+                localStorage.setItem('theme', 'dark');
+            }
+        }
+
+        if (localStorage.getItem('theme') === 'dark') {
+            document.body.setAttribute('data-theme', 'dark');
+            document.getElementById('themeIcon').className = 'fa-solid fa-sun';
+            document.getElementById('themeText').textContent = 'الوضع المضيء';
+        }
+    </script>
+</body>
+</html>

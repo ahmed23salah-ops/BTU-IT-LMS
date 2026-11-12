@@ -1,0 +1,242 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>التكليفات والواجبات | جامعة بني سويف التكنولوجية</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg-color: #f4f7f6;
+            --card-bg: #ffffff;
+            --text-color: #2c3e50;
+            --text-muted: #6c757d;
+            --primary-color: #003366;
+            --accent-color: #ffc107;
+            --button-bg: #0056b3;
+            --button-hover: #003d80;
+            --border-color: #e2e8f0;
+        }
+
+        [data-theme="dark"] {
+            --bg-color: #121824;
+            --card-bg: #1e293b;
+            --text-color: #f8fafc;
+            --text-muted: #94a3b8;
+            --primary-color: #1e293b;
+            --accent-color: #f59e0b;
+            --button-bg: #2563eb;
+            --button-hover: #1d4ed8;
+            --border-color: #334155;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; transition: background-color 0.3s, color 0.3s; }
+        body { background-color: var(--bg-color); color: var(--text-color); min-height: 100vh; display: flex; flex-direction: column; }
+
+        header { background-color: var(--primary-color); color: white; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); position: sticky; top: 0; z-index: 100; }
+        .logo-container { display: flex; align-items: center; gap: 15px; }
+        .university-info h1 { font-size: 1.2rem; font-weight: 700; }
+        .university-info p { font-size: 0.85rem; color: var(--accent-color); font-weight: bold; }
+
+        .nav-controls { display: flex; align-items: center; gap: 12px; }
+        .theme-toggle { background: rgba(255, 255, 255, 0.15); border: none; color: white; padding: 8px 12px; border-radius: 20px; cursor: pointer; display: flex; align-items: center; gap: 6px; font-size: 0.9rem; }
+        .theme-toggle:hover { background: rgba(255, 255, 255, 0.3); }
+
+        .back-btn { background-color: transparent; color: white; border: 1.5px solid white; padding: 6px 14px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 0.9rem; display: inline-flex; align-items: center; gap: 6px; }
+        .back-btn:hover { background-color: white; color: var(--primary-color); }
+
+        .hero { text-align: center; padding: 30px 20px 10px; max-width: 900px; margin: 0 auto; }
+        .hero h2 { font-size: 1.8rem; margin-bottom: 8px; color: var(--text-color); }
+        .hero p { font-size: 1rem; color: var(--text-muted); }
+
+        .assignments-container { max-width: 1000px; margin: 30px auto 40px; padding: 0 20px; display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 25px; width: 100%; }
+        .assignment-card { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px; padding: 25px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); display: flex; flex-direction: column; justify-content: space-between; }
+        .assignment-card:hover { transform: translateY(-5px); box-shadow: 0 8px 25px rgba(0,0,0,0.1); }
+        
+        .assignment-header { display: flex; align-items: center; gap: 15px; margin-bottom: 15px; }
+        .assignment-icon { font-size: 2rem; color: var(--button-bg); background: rgba(0, 86, 179, 0.1); padding: 12px; border-radius: 10px; }
+        .assignment-title h3 { font-size: 1.1rem; margin-bottom: 4px; }
+        .assignment-title span { font-size: 0.8rem; color: var(--accent-color); font-weight: bold; background: var(--primary-color); padding: 2px 8px; border-radius: 10px; }
+
+        .assignment-desc { font-size: 0.9rem; color: var(--text-muted); margin-bottom: 20px; line-height: 1.5; }
+
+        .go-btn { background-color: var(--button-bg); color: white; padding: 10px; border-radius: 6px; text-decoration: none; text-align: center; font-weight: bold; display: flex; justify-content: center; align-items: center; gap: 8px; width: 100%; }
+        .go-btn:hover { background-color: var(--button-hover); }
+
+        footer { margin-top: auto; text-align: center; padding: 20px; font-size: 0.85rem; color: var(--text-muted); border-top: 1px solid var(--border-color); }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo-container">
+            <img src="{% static 'images/btu_logo.jpg' %}" alt="شعار الجامعة" style="width: 55px; height: 55px; object-fit: contain; background: white; border-radius: 50%; padding: 2px;">
+            <div class="university-info">
+                <h1>جامعة بني سويف التكنولوجية</h1>
+                <p><i class="fa-solid fa-code-branch"></i> برنامج تكنولوجيا المعلومات (IT)</p>
+            </div>
+        </div>
+        <div class="nav-controls">
+            <button class="theme-toggle" id="themeToggleBtn" onclick="toggleTheme()">
+                <i class="fa-solid fa-moon" id="themeIcon"></i>
+                <span id="themeText">الوضع الداكن</span>
+            </button>
+            <a href="{% url 'home' %}" class="back-btn"><i class="fa-solid fa-arrow-right"></i> الرئيسية</a>
+        </div>
+    </header>
+
+    <section class="hero">
+        <h2>التكليفات والواجبات الأكاديمية</h2>
+        <p>اختر المادة لعرض التكليفات والمهام المطلوبة ورفع ملفات الحلول الخاصة بك.</p>
+    </section>
+
+    <main class="assignments-container">
+
+        <!-- 1. Python -->
+        <div class="assignment-card">
+            <div>
+                <div class="assignment-header">
+                    <i class="fa-brands fa-python assignment-icon"></i>
+                    <div class="assignment-title">
+                        <h3>أساسيات البرمجة (Python)</h3>
+                        <span>مادة أساسية</span>
+                    </div>
+                </div>
+                <div class="assignment-desc">
+                    تابع التكليفات، الواجبات البرمجية، ورفع ملفات الحلول الخاصة بلغة بايثون.
+                </div>
+            </div>
+            <a href="{% url 'assignment_detail' 'Python' %}" class="go-btn">
+                <i class="fa-solid fa-arrow-left"></i> دخول لتكليفات المادة
+            </a>
+        </div>
+
+        <!-- 2. Cyber Security -->
+        <div class="assignment-card">
+            <div>
+                <div class="assignment-header">
+                    <i class="fa-solid fa-shield-halved assignment-icon"></i>
+                    <div class="assignment-title">
+                        <h3>مقدمة الأمن السيبراني</h3>
+                        <span>متطلب تخصصي</span>
+                    </div>
+                </div>
+                <div class="assignment-desc">
+                    تابع التقارير، مهام الأمان الرقمي، ورفع حلول تكليفات الأمن السيبراني.
+                </div>
+            </div>
+            <a href="{% url 'assignment_detail' 'Cyber Security' %}" class="go-btn">
+                <i class="fa-solid fa-arrow-left"></i> دخول لتكليفات المادة
+            </a>
+        </div>
+
+        <!-- 3. IT Essentials -->
+        <div class="assignment-card">
+            <div>
+                <div class="assignment-header">
+                    <i class="fa-solid fa-laptop-code assignment-icon"></i>
+                    <div class="assignment-title">
+                        <h3>أساسيات تكنولوجيا المعلومات</h3>
+                        <span>عملي ونظري</span>
+                    </div>
+                </div>
+                <div class="assignment-desc">
+                    مهام وتجارب معملية ونظرية خاصة بالأساسيات ورفع تقارير المعمل.
+                </div>
+            </div>
+            <a href="{% url 'assignment_detail' 'IT Essentials' %}" class="go-btn">
+                <i class="fa-solid fa-arrow-left"></i> دخول لتكليفات المادة
+            </a>
+        </div>
+
+        <!-- 4. Math -->
+        <div class="assignment-card">
+            <div>
+                <div class="assignment-header">
+                    <i class="fa-solid fa-calculator assignment-icon"></i>
+                    <div class="assignment-title">
+                        <h3>الرياضيات الهندسية (Math)</h3>
+                        <span>متطلب علمي</span>
+                    </div>
+                </div>
+                <div class="assignment-desc">
+                    تمارين ومسائل رياضية أسبوعية ورفع حلول المسائل والمقالات.
+                </div>
+            </div>
+            <a href="{% url 'assignment_detail' 'Math' %}" class="go-btn">
+                <i class="fa-solid fa-arrow-left"></i> دخول لتكليفات المادة
+            </a>
+        </div>
+
+        <!-- 5. Physics -->
+        <div class="assignment-card">
+            <div>
+                <div class="assignment-header">
+                    <i class="fa-solid fa-atom assignment-icon"></i>
+                    <div class="assignment-title">
+                        <h3>الفيزياء العامة (Physics)</h3>
+                        <span>متطلب علمي</span>
+                    </div>
+                </div>
+                <div class="assignment-desc">
+                    تطبيقات ومسائل الفيزياء، الدوائر الكهربائية، ورفع حلول التكليفات.
+                </div>
+            </div>
+            <a href="{% url 'assignment_detail' 'Physics' %}" class="go-btn">
+                <i class="fa-solid fa-arrow-left"></i> دخول لتكليفات المادة
+            </a>
+        </div>
+
+        <!-- 6. English -->
+        <div class="assignment-card">
+            <div>
+                <div class="assignment-header">
+                    <i class="fa-solid fa-language assignment-icon"></i>
+                    <div class="assignment-title">
+                        <h3>اللغة الإنجليزية</h3>
+                        <span>متطلب لغوي</span>
+                    </div>
+                </div>
+                <div class="assignment-desc">
+                    تكليفات التقارير، كتابة الأبحاث المصغرة، والمصطلحات التقنية.
+                </div>
+            </div>
+            <a href="{% url 'assignment_detail' 'English' %}" class="go-btn">
+                <i class="fa-solid fa-arrow-left"></i> دخول لتكليفات المادة
+            </a>
+        </div>
+
+    </main>
+
+    <footer>
+        <p>جميع الحقوق محفوظة &copy; 2026 - جامعة بني سويف التكنولوجية (قسم تكنولوجيا المعلومات)</p>
+    </footer>
+
+    <script>
+        function toggleTheme() {
+            const body = document.body;
+            const themeIcon = document.getElementById('themeIcon');
+            const themeText = document.getElementById('themeText');
+            
+            if (body.getAttribute('data-theme') === 'dark') {
+                body.removeAttribute('data-theme');
+                themeIcon.className = 'fa-solid fa-moon';
+                themeText.textContent = 'الوضع الداكن';
+                localStorage.setItem('theme', 'light');
+            } else {
+                body.setAttribute('data-theme', 'dark');
+                themeIcon.className = 'fa-solid fa-sun';
+                themeText.textContent = 'الوضع المضيء';
+                localStorage.setItem('theme', 'dark');
+            }
+        }
+
+        if (localStorage.getItem('theme') === 'dark') {
+            document.body.setAttribute('data-theme', 'dark');
+            document.getElementById('themeIcon').className = 'fa-solid fa-sun';
+            document.getElementById('themeText').textContent = 'الوضع المضيء';
+        }
+    </script>
+</body>
+</html>

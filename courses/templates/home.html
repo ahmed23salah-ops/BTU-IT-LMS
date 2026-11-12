@@ -1,0 +1,300 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>جامعة بني سويف التكنولوجية | IT</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg-color: #f4f7f6;
+            --card-bg: #ffffff;
+            --text-color: #2c3e50;
+            --text-muted: #6c757d;
+            --primary-color: #003366;
+            --accent-color: #ffc107;
+            --button-bg: #0056b3;
+            --button-hover: #003d80;
+            --modal-bg: rgba(0, 0, 0, 0.6);
+            --border-color: #e2e8f0;
+        }
+
+        [data-theme="dark"] {
+            --bg-color: #121824;
+            --card-bg: #1e293b;
+            --text-color: #f8fafc;
+            --text-muted: #94a3b8;
+            --primary-color: #1e293b;
+            --accent-color: #f59e0b;
+            --button-bg: #2563eb;
+            --button-hover: #1d4ed8;
+            --modal-bg: rgba(0, 0, 0, 0.8);
+            --border-color: #334155;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; transition: background-color 0.3s, color 0.3s; }
+        body { background-color: var(--bg-color); color: var(--text-color); min-height: 100vh; display: flex; flex-direction: column; }
+
+        header { background-color: var(--primary-color); color: white; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); position: sticky; top: 0; z-index: 100; }
+        .logo-container { display: flex; align-items: center; gap: 15px; }
+        .university-info h1 { font-size: 1.2rem; font-weight: 700; }
+        .university-info p { font-size: 0.85rem; color: var(--accent-color); font-weight: bold; }
+
+        .nav-controls { display: flex; align-items: center; gap: 12px; }
+        .theme-toggle { background: rgba(255, 255, 255, 0.15); border: none; color: white; padding: 8px 12px; border-radius: 20px; cursor: pointer; display: flex; align-items: center; gap: 6px; font-size: 0.9rem; }
+        .theme-toggle:hover { background: rgba(255, 255, 255, 0.3); }
+
+        .auth-btn { padding: 8px 18px; border-radius: 6px; border: none; font-weight: bold; cursor: pointer; font-size: 0.9rem; text-decoration: none; display: inline-block; }
+        .btn-login { background-color: transparent; color: white; border: 1.5px solid white; }
+        .btn-login:hover { background-color: white; color: var(--primary-color); }
+        .btn-register { background-color: var(--accent-color); color: #000; }
+        .btn-register:hover { background-color: #e0a800; }
+
+        .hero { text-align: center; padding: 40px 20px 20px; max-width: 900px; margin: 0 auto; }
+        .hero h2 { font-size: 2rem; margin-bottom: 12px; color: var(--text-color); }
+        .hero p { font-size: 1.1rem; color: var(--text-muted); line-height: 1.6; }
+        .badge-it { display: inline-block; background: var(--button-bg); color: white; padding: 4px 12px; border-radius: 12px; font-size: 0.85rem; margin-bottom: 15px; }
+
+        .container { max-width: 1100px; margin: 20px auto 40px; padding: 0 20px; display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 25px; width: 100%; }
+        .card { background: var(--card-bg); border: 1px solid var(--border-color); padding: 30px 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); text-align: center; }
+        .card:hover { transform: translateY(-5px); box-shadow: 0 8px 25px rgba(0,0,0,0.1); }
+        .card-icon { font-size: 2.5rem; color: var(--button-bg); margin-bottom: 15px; }
+        .card h3 { margin-bottom: 10px; font-size: 1.25rem; }
+        .card p { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px; }
+        .card-btn { display: inline-block; width: 100%; background-color: var(--button-bg); color: white; padding: 10px; border-radius: 6px; text-decoration: none; font-weight: bold; border: none; cursor: pointer; text-align: center; }
+        .card-btn:hover { background-color: var(--button-hover); }
+
+        /* Modal Styles */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: var(--modal-bg); z-index: 1000; justify-content: center; align-items: center; padding: 20px; }
+        .modal-content { background-color: var(--card-bg); padding: 30px; border-radius: 12px; width: 100%; max-width: 400px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); position: relative; }
+        .close-btn { position: absolute; left: 20px; top: 15px; font-size: 1.5rem; cursor: pointer; color: var(--text-muted); }
+        .modal h3 { margin-bottom: 20px; text-align: center; color: var(--text-color); }
+        .form-group { margin-bottom: 15px; text-align: right; }
+        .form-group label { display: block; margin-bottom: 5px; font-size: 0.9rem; color: var(--text-color); }
+        .form-group input { width: 100%; padding: 10px 12px; border-radius: 6px; border: 1px solid var(--border-color); background-color: var(--bg-color); color: var(--text-color); font-size: 0.95rem; }
+        .submit-btn { width: 100%; padding: 11px; background-color: var(--button-bg); color: white; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; margin-top: 10px; }
+        .submit-btn:hover { background-color: var(--button-hover); }
+
+        footer { margin-top: auto; text-align: center; padding: 20px; font-size: 0.85rem; color: var(--text-muted); border-top: 1px solid var(--border-color); }
+    </style>
+</head>
+<body>
+
+  <!-- Header Section -->
+  <header>
+    <div class="logo-container">
+        <img src="{% static 'images/btu_logo.jpg' %}" alt="شعار جامعة بني سويف التكنولوجية" style="width: 55px; height: 55px; object-fit: contain; background: white; border-radius: 50%; padding: 2px;">
+        <div class="university-info">
+            <h1>جامعة بني سويف التكنولوجية</h1>
+            <p><i class="fa-solid fa-code-branch"></i> قسم تكنولوجيا المعلومات (IT Department)</p>
+        </div>
+    </div>
+
+    <div class="nav-controls">
+        <button class="theme-toggle" id="themeToggleBtn" onclick="toggleTheme()">
+            <i class="fa-solid fa-moon" id="themeIcon"></i>
+            <span id="themeText">الوضع الداكن</span>
+        </button>
+        <button class="auth-btn btn-login" onclick="openModal('loginModal')">تسجيل الدخول</button>
+        <button class="auth-btn btn-register" onclick="openModal('registerModal')">إنشاء حساب</button>
+    </div>
+  </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <span class="badge-it">منصة بوابة الطلاب والأكاديميين</span>
+        <h2>أهلاً بك في المنصة الأكاديمية الذكية 👋</h2>
+        <p>بوابتك المتكاملة لمتابعة المقررات الدراسية، الجداول، والتكليفات الخاصة بقسم تكنولوجيا المعلومات.</p>
+    </section>
+
+    <!-- شريط التنبيهات والإشعارات المحدثة من لوحة تحكم الدكتور -->
+    <div style="max-width: 1100px; margin: 0 auto 20px; padding: 0 20px; width: 100%;">
+        <div style="background: var(--card-bg); border: 1px solid var(--border-color); border-right: 4px solid var(--accent-color); padding: 18px 22px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
+            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px; font-weight: bold; color: var(--text-color); font-size: 1.05rem;">
+                <i class="fa-solid fa-bullhorn" style="color: var(--accent-color);"></i>
+                <span>تنبيهات وأخبار قسم تكنولوجيا المعلومات:</span>
+            </div>
+            <div style="font-size: 0.95rem; color: var(--text-color);">
+                {% if notifications %}
+                    <ul style="list-style-type: none; padding: 0;">
+                        {% for notif in notifications %}
+                            <li style="padding: 10px 0; border-bottom: 1px dashed var(--border-color); display: flex; flex-direction: column; gap: 8px;">
+                                <div style="display: flex; align-items: center; gap: 8px;">
+                                    <i class="fa-solid fa-circle-dot" style="font-size: 8px; color: var(--button-bg);"></i>
+                                    <span style="font-weight: 500;">{{ notif.text }}</span>
+                                </div>
+                                {% if notif.image_url %}
+                                    <div style="margin-right: 15px;">
+                                        <img src="{{ notif.image_url }}" alt="مرفق إشعار" style="max-width: 220px; border-radius: 6px; border: 1px solid var(--border-color);">
+                                    </div>
+                                {% endif %}
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p style="color: var(--text-muted); margin: 0;">لا توجد إشعارات جديدة في الوقت الحالي.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Interactive Feature Cards -->
+    <main class="container">
+        <!-- كارت المقررات الدراسية -->
+        <div class="card">
+            <i class="fa-solid fa-book-open card-icon"></i>
+            <h3>المقررات الدراسية</h3>
+            <p>استعرض المحاضرات والمناهج الخاصة بالقسم.</p>
+            <a href="{% url 'courses' %}" class="card-btn">تصفح المواد</a>
+        </div>
+
+        <!-- كارت الجداول والمواعيد -->
+        <div class="card">
+            <i class="fa-solid fa-calendar-days card-icon"></i>
+            <h3>الجداول والمواعيد</h3>
+            <p>جدول المحاضرات والسكاشن والمواعيد اليومية.</p>
+            <a href="{% url 'schedule' %}" class="card-btn">عرض الجدول</a>
+        </div>
+
+        <!-- كارت فعاليات وأحداث الجامعة -->
+        <div class="card">
+            <i class="fa-solid fa-calendar-star card-icon"></i>
+            <h3>فعاليات وأحداث الجامعة</h3>
+            <p>تابع الندوات، ورش العمل، والأنشطة الطلابية.</p>
+            <a href="{% url 'events' %}" class="card-btn">عرض الفعاليات</a>
+        </div>
+
+        <!-- كارت التكليفات والواجبات الأكاديمية -->
+        <div class="card">
+            <i class="fa-solid fa-file-lines card-icon"></i>
+            <h3>التكليفات والواجبات</h3>
+            <p>تابع المهام الدراسية وارفع ملفات الحلول الخاصة بك.</p>
+            <a href="{% url 'assignments' %}" class="card-btn">عرض التكليفات</a>
+        </div>
+
+        <!-- كارت محرر الأكواد البرمجية الجديد المربوط بالـ URL -->
+        <div class="card">
+            <i class="fa-solid fa-code card-icon"></i>
+            <h3>محرر الأكواد أونلاين</h3>
+            <p>اكتب واختبر أكواد لغة بايثون مباشرة داخل المتصفح.</p>
+            <a href="{% url 'python_compiler' %}" class="card-btn">فتح المحرر 🚀</a>
+        </div>
+
+        <!-- كارت المنتدى الأكاديمي -->
+<div class="card">
+    <i class="fa-solid fa-comments card-icon"></i>
+    <h3>المنتدى الأكاديمي</h3>
+    <p>طرح الأسئلة والنقاشات البرمجية وتبادل الردود مع الزملاء والدكتور.</p>
+    <a href="{% url 'forum' %}" class="card-btn">دخول المنتدى 💬</a>
+</div>
+    </main>
+
+    <!-- Modal: Register -->
+    <div class="modal" id="registerModal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeModal('registerModal')">&times;</span>
+            <h3>إنشاء حساب جديد</h3>
+            <form onsubmit="handleRegister(event)">
+                <div class="form-group">
+                    <label>الاسم الكامل:</label>
+                    <input type="text" id="regName" required placeholder="أدخل اسمك ">
+                </div>
+                <div class="form-group">
+                    <label>رقم الموبايل:</label>
+                    <input type="tel" id="regPhone" required placeholder="01xxxxxxxxx">
+                </div>
+                <div class="mb-3">
+                    <label>البريد الإلكتروني:</label>
+                    <input type="email" name="email" required placeholder="example@gmail.com" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label>كلمة السر:</label>
+                    <input type="password" id="regPassword" required placeholder="أدخل كلمة السر">
+                </div>
+                <button type="submit" class="submit-btn">إتمام إنشاء الحساب</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal: Login -->
+    <div class="modal" id="loginModal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeModal('loginModal')">&times;</span>
+            <h3>تسجيل الدخول</h3>
+            <form onsubmit="handleLogin(event)">
+                <div class="form-group">
+                    <label>رقم الموبايل:</label>
+                    <input type="tel" id="loginPhone" required placeholder="01xxxxxxxxx">
+                </div>
+                <div class="form-group">
+                    <label>كلمة السر:</label>
+                    <input type="password" id="loginPassword" required placeholder="أدخل كلمة السر الخاصة بك">
+                </div>
+                <button type="submit" class="submit-btn">دخول للمنصة</button>
+            </form>
+        </div>
+    </div>
+
+    <footer>
+        <p>جميع الحقوق محفوظة &copy; 2026 - جامعة بني سويف التكنولوجية (قسم تكنولوجيا المعلومات)</p>
+    </footer>
+
+    <!-- JavaScript for Interactivity -->
+    <script>
+        function toggleTheme() {
+            const body = document.body;
+            const themeIcon = document.getElementById('themeIcon');
+            const themeText = document.getElementById('themeText');
+            
+            if (body.getAttribute('data-theme') === 'dark') {
+                body.removeAttribute('data-theme');
+                themeIcon.className = 'fa-solid fa-moon';
+                themeText.textContent = 'الوضع الداكن';
+                localStorage.setItem('theme', 'light');
+            } else {
+                body.setAttribute('data-theme', 'dark');
+                themeIcon.className = 'fa-solid fa-sun';
+                themeText.textContent = 'الوضع المضيء';
+                localStorage.setItem('theme', 'dark');
+            }
+        }
+
+        if (localStorage.getItem('theme') === 'dark') {
+            document.body.setAttribute('data-theme', 'dark');
+            document.getElementById('themeIcon').className = 'fa-solid fa-sun';
+            document.getElementById('themeText').textContent = 'الوضع المضيء';
+        }
+
+        function openModal(id) {
+            document.getElementById(id).style.display = 'flex';
+        }
+
+        function closeModal(id) {
+            document.getElementById(id).style.display = 'none';
+        }
+
+        window.onclick = function(event) {
+            if (event.target.classList.contains('modal')) {
+                event.target.style.display = 'none';
+            }
+        }
+
+        function handleRegister(e) {
+            e.preventDefault();
+            const name = document.getElementById('regName').value;
+            const phone = document.getElementById('regPhone').value;
+            alert(`مرحباً بك يا ${name}! تم إنشاء الحساب بنجاح برقم الموبايل: ${phone}`);
+            closeModal('registerModal');
+            openModal('loginModal');
+        }
+
+        function handleLogin(e) {
+            e.preventDefault();
+            const phone = document.getElementById('loginPhone').value;
+            alert(`أهلاً بك مجدداً! تم تسجيل الدخول بنجاح برقم الموبايل: ${phone}`);
+            closeModal('loginModal');
+        }
+    </script>
+</body>
+</html>

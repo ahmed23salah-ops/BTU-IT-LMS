@@ -1,0 +1,196 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>جداول المحاضرات والسكاشن | جامعة بني سويف التكنولوجية</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg-color: #f4f7f6;
+            --card-bg: #ffffff;
+            --text-color: #2c3e50;
+            --text-muted: #6c757d;
+            --primary-color: #003366;
+            --accent-color: #ffc107;
+            --button-bg: #0056b3;
+            --button-hover: #003d80;
+            --border-color: #e2e8f0;
+            --lec-bg: #1e3a8a; /* خلفية المحاضرات الغامقة */
+            --lec-text: #ffffff;
+            --sec-bg: #f8fafc; /* خلفية السكاشن الفاتحة */
+            --sec-text: #1e293b;
+        }
+
+        [data-theme="dark"] {
+            --bg-color: #121824;
+            --card-bg: #1e293b;
+            --text-color: #f8fafc;
+            --text-muted: #94a3b8;
+            --primary-color: #1e293b;
+            --accent-color: #f59e0b;
+            --button-bg: #2563eb;
+            --button-hover: #1d4ed8;
+            --border-color: #334155;
+            --lec-bg: #312e81;
+            --lec-text: #e0e7ff;
+            --sec-bg: #0f172a;
+            --sec-text: #cbd5e1;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; transition: background-color 0.3s, color 0.3s; }
+        body { background-color: var(--bg-color); color: var(--text-color); min-height: 100vh; display: flex; flex-direction: column; }
+
+        header { background-color: var(--primary-color); color: white; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); position: sticky; top: 0; z-index: 100; }
+        .logo-container { display: flex; align-items: center; gap: 15px; }
+        .university-info h1 { font-size: 1.2rem; font-weight: 700; }
+        .university-info p { font-size: 0.85rem; color: var(--accent-color); font-weight: bold; }
+
+        .nav-controls { display: flex; align-items: center; gap: 12px; }
+        .theme-toggle { background: rgba(255, 255, 255, 0.15); border: none; color: white; padding: 8px 12px; border-radius: 20px; cursor: pointer; display: flex; align-items: center; gap: 6px; font-size: 0.9rem; }
+        .theme-toggle:hover { background: rgba(255, 255, 255, 0.3); }
+
+        .back-btn { background-color: transparent; color: white; border: 1.5px solid white; padding: 6px 14px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 0.9rem; display: inline-flex; align-items: center; gap: 6px; }
+        .back-btn:hover { background-color: white; color: var(--primary-color); }
+
+        .hero { text-align: center; padding: 30px 20px 10px; max-width: 900px; margin: 0 auto; }
+        .hero h2 { font-size: 1.8rem; margin-bottom: 8px; color: var(--text-color); }
+        .hero p { font-size: 1rem; color: var(--text-muted); }
+
+        .table-container { max-width: 1200px; margin: 20px auto 40px; padding: 0 20px; overflow-x: auto; width: 100%; }
+        table { width: 100%; border-collapse: collapse; background: var(--card-bg); border-radius: 10px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.05); direction: ltr; } /* جعل الجدول يبدأ من الشمال لليمين */
+        th, td { border: 1px solid var(--border-color); padding: 12px 8px; text-align: center; font-size: 0.85rem; }
+        th { background-color: var(--primary-color); color: white; font-weight: 600; }
+        
+        .lecture { background-color: var(--lec-bg); color: var(--lec-text); font-weight: bold; border-radius: 6px; padding: 8px; }
+        .section-lab { background-color: var(--sec-bg); color: var(--sec-text); border-radius: 6px; padding: 8px; }
+        .free-slot { color: var(--text-muted); }
+
+        .lecture small, .section-lab small { display: block; font-size: 0.75rem; opacity: 0.85; margin-top: 3px; font-weight: normal; }
+
+        footer { margin-top: auto; text-align: center; padding: 20px; font-size: 0.85rem; color: var(--text-muted); border-top: 1px solid var(--border-color); }
+    </style>
+</head>
+<body>
+
+    <!-- Header Section with Logo -->
+    <header>
+        <div class="logo-container">
+            <img src="{% static 'images/btu_logo.png' %}" alt="شعار جامعة بني سويف التكنولوجية" style="width: 55px; height: 55px; object-fit: contain; background: white; border-radius: 50%; padding: 2px;">
+            <div class="university-info">
+                <h1>جامعة بني سويف التكنولوجية</h1>
+                <p><i class="fa-solid fa-code-branch"></i> برنامج تكنولوجيا المعلومات (IT)</p>
+            </div>
+        </div>
+        <div class="nav-controls">
+            <button class="theme-toggle" id="themeToggleBtn" onclick="toggleTheme()">
+                <i class="fa-solid fa-moon" id="themeIcon"></i>
+                <span id="themeText">الوضع الداكن</span>
+            </button>
+            <a href="{% url 'home' %}" class="back-btn"><i class="fa-solid fa-arrow-right"></i> الرئيسية</a>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <h2>جدول الفصل الدراسي الأول للفرقة الأولى (2026-2027)[cite: 2]</h2>
+        <p>المحاضرات باللون الغامق المميز، والسكاشن والمعامل باللون الفاتح حسب المجموعات (من الشمال لليمين).</p>
+    </section>
+
+    <!-- Table Section -->
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>8-9</th>
+                    <th>9-10</th>
+                    <th>10-11</th>
+                    <th>11-12</th>
+                    <th>12-1</th>
+                    <th>1-2</th>
+                    <th>2-3</th>
+                    <th>3-4</th>
+                    <th>4-5</th>
+                    <th>5-6</th>
+                    <th>Day</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td colspan="10" class="free-slot">إجازة / لا توجد محاضرات</td>
+                    <td><strong>Saturday</strong></td>
+                </tr>
+                <tr>
+                    <td class="free-slot">-</td>
+                    <td colspan="2" class="lecture">Math<small>د. أيمن زين<br>A326</small></td>
+                    <td colspan="2" class="free-slot">-</td>
+                    <td colspan="2" class="lecture">IT Essentials Lec<small>د. أسامة مختار<br>A325</small></td>
+                    <td colspan="2" class="lecture">Physics<small>د. مصطفى رشاد<br>A325</small></td>
+                    <td colspan="1" class="free-slot">-</td>
+                    <td><strong>Sunday</strong></td>
+                </tr>
+                <tr>
+                    <td colspan="3" class="free-slot">-</td>
+                    <td colspan="2" class="lecture">Intro. Cyber Security<small>د. عبير أيوب<br>A329</small></td>
+                    <td colspan="5" class="free-slot">-</td>
+                    <td><strong>Monday</strong></td>
+                </tr>
+                <tr>
+                    <td colspan="2" class="section-lab">Math. Group (2)<small>م. أمال كمال<br>A209</small></td>
+                    <td colspan="1" class="free-slot">-</td>
+                    <td colspan="2" class="lecture">Python Lec<small>د. أسامة مختار<br>A101</small></td>
+                    <td colspan="2" class="section-lab">Math. Group (1)<small>م. أمال كمال<br>A209</small></td>
+                    <td colspan="3" class="free-slot">-</td>
+                    <td><strong>Tuesday</strong></td>
+                </tr>
+                <tr>
+                    <td colspan="3" class="section-lab">IT Essentials lab (A)<small>م. مني محمود<br>A1-04</small></td>
+                    <td colspan="3" class="section-lab">IT Essentials lab (B)<small>م. مني محمود<br>A1-04</small></td>
+                    <td colspan="3" class="section-lab">IT Essentials lab (C)<small>م. مني محمود<br>A1-04</small></td>
+                    <td class="free-slot">-</td>
+                    <td><strong>Wednesday</strong></td>
+                </tr>
+                <tr>
+                    <td colspan="2" class="lecture">English 1 (Lec.)<small>د. هبة السعيد<br>A115</small></td>
+                    <td colspan="2" class="section-lab">Technical English (1)<br><small>م. داليا | A209</small></td>
+                    <td colspan="2" class="section-lab">Technical English (2)<br><small>م. داليا | A209</small></td>
+                    <td colspan="4" class="free-slot">-</td>
+                    <td><strong>Thursday</strong></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <footer>
+        <p>جميع الحقوق محفوظة &copy; 2026 - جامعة بني سويف التكنولوجية (قسم تكنولوجيا المعلومات)</p>
+    </footer>
+
+    <!-- JavaScript for Dark Mode -->
+    <script>
+        function toggleTheme() {
+            const body = document.body;
+            const themeIcon = document.getElementById('themeIcon');
+            const themeText = document.getElementById('themeText');
+            
+            if (body.getAttribute('data-theme') === 'dark') {
+                body.removeAttribute('data-theme');
+                themeIcon.className = 'fa-solid fa-moon';
+                themeText.textContent = 'الوضع الداكن';
+                localStorage.setItem('theme', 'light');
+            } else {
+                body.setAttribute('data-theme', 'dark');
+                themeIcon.className = 'fa-solid fa-sun';
+                themeText.textContent = 'الوضع المضيء';
+                localStorage.setItem('theme', 'dark');
+            }
+        }
+
+        if (localStorage.getItem('theme') === 'dark') {
+            document.body.setAttribute('data-theme', 'dark');
+            document.getElementById('themeIcon').className = 'fa-solid fa-sun';
+            document.getElementById('themeText').textContent = 'الوضع المضيء';
+        }
+    </script>
+</body>
+</html>

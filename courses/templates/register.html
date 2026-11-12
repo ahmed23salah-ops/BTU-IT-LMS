@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>تسجيل طالب جديد - جامعة بني سويف التكنولوجية</title>
+    <style>
+        body { font-family: Tahoma, sans-serif; background: #f4f6f9; padding: 50px; text-align: center; }
+        .form-container { background: white; padding: 30px; border-radius: 8px; width: 400px; margin: auto; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        input, select { width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; }
+        button { background: #007bff; color: white; border: none; padding: 10px; width: 100%; border-radius: 5px; cursor: pointer; font-size: 16px; }
+        button:hover { background: #0056b3; }
+    </style>
+</head>
+<body>
+    <div class="form-container">
+        <h2>تسجيل حساب طالب جديد</h2>
+        <form method="POST">
+            {% csrf_token %}
+            <input type="text" name="username" placeholder="اسم المستخدم" required>
+            
+            <!-- حقل البريد الإلكتروني المضاف خصيصاً عشان الـ OTP -->
+            <input type="email" name="email" placeholder="البريد الإلكتروني" required>
+            
+            <input type="password" name="password" placeholder="كلمة المرور" required>
+            <select name="department">
+                <option value="IT">تكنولوجيا المعلومات</option>
+            </select>
+            <button type="submit">تسجيل الحساب</button>
+        </form>
+    </div>
+</body>
+</html>
