@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>الامتحانات والاختبارات الأكاديمية</title>
+</head>
+<body>
+    <h1>قائمة الامتحانات المتاحة</h1>
+    <ul>
+        {% for exam in exams %}
+            <li>
+                <h3>{{ exam.title }} - المادة: {{ exam.course.name }}</h3>
+                <p>المدة المحددة: {{ exam.duration_minutes }} دقيقة</p>
+                {% if exam.pdf_file %}
+                    <a href="{{ exam.pdf_file.url }}" target="_blank">تحميل ملف الامتحان (PDF)</a><br>
+                {% endif %}
+                <a href="{% url 'take_exam' exam.id %}">بدء الامتحان الآن 🚀</a>
+            </li>
+        {% empty %}
+            <p>لا توجد امتحانات متاحة حالياً.</p>
+        {% endfor %}
+    </ul>
+</body>
+</html>

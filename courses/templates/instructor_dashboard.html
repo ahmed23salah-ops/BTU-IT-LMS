@@ -79,7 +79,7 @@
     <div class="container">
         <a href="{% url 'home' %}" class="back-link"><i class="fa-solid fa-arrow-right"></i> الرجوع للصفحة الرئيسية</a>
 
-        <!-- التبويبات للتحكم بالأقسام -->
+        <!-- التبويبات للتحكم بالأقسام (مضاف إليها تبويب إدارة الامتحانات والاختبارات) -->
         <div class="dash-tabs">
             <button class="tab-btn active" onclick="switchTab('assignments-tab', this)">
                 <i class="fa-solid fa-file-lines"></i> إدارة الواجبات والتكليفات
@@ -87,15 +87,25 @@
             <button class="tab-btn" onclick="switchTab('courses-tab', this)">
                 <i class="fa-solid fa-book-open"></i> رفع المحاضرات والملفات
             </button>
+            <!-- 🆕 تبويب إدارة الامتحانات الجديد -->
+            <button class="tab-btn" onclick="switchTab('exams-tab', this)">
+                <i class="fa-solid fa-file-shield"></i> إدارة الامتحانات والتقييمات
+            </button>
             <button class="tab-btn" onclick="switchTab('events-tab', this)">
                 <i class="fa-solid fa-calendar-star"></i> إدارة الأنشطة والفعاليات
             </button>
             <button class="tab-btn" onclick="switchTab('notifications-tab', this)">
                 <i class="fa-solid fa-bell"></i> قسم التنبيهات والإشعارات
             </button>
+            <button class="tab-btn" onclick="switchTab('approvals-tab', this)">
+                <i class="fa-solid fa-user-check"></i> طلبات تفعيل الحسابات
+            </button>
+            <button class="tab-btn" onclick="switchTab('progress-tab', this)">
+                <i class="fa-solid fa-chart-line"></i> متابعة تقدم الطلاب
+            </button>
         </div>
 
-        <!-- 1. قسم الواجبات والتكليفات (محدث بقائمة المواد) -->
+        <!-- 1. قسم الواجبات والتكليفات -->
         <div id="assignments-tab" class="tab-content active">
             <h3><i class="fa-solid fa-plus-circle"></i> نشر تكليف أو واجب جديد</h3>
             <form method="POST" enctype="multipart/form-data">
@@ -132,7 +142,7 @@
             </form>
         </div>
 
-        <!-- 2. قسم المحاضرات وملفات الشرح (محدث بقائمة المواد) -->
+        <!-- 2. قسم المحاضرات وملفات الشرح -->
         <div id="courses-tab" class="tab-content">
             <h3><i class="fa-solid fa-cloud-arrow-up"></i> رفع ملف شرح أو محاضرة جديدة</h3>
             <form method="POST" enctype="multipart/form-data">
@@ -161,7 +171,45 @@
             </form>
         </div>
 
-        <!-- 3. قسم الأنشطة والفعاليات -->
+        <!-- 🆕 3. قسم إدارة ونشر الامتحانات الجديد -->
+        <div id="exams-tab" class="tab-content">
+            <h3><i class="fa-solid fa-file-shield"></i> نشر امتحان أو اختبار جديد</h3>
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                <input type="hidden" name="section_type" value="exam">
+                
+                <div class="form-group">
+                    <label>عنوان الامتحان:</label>
+                    <input type="text" name="exam_title" required placeholder="مثال: امتحان منتصف الترم - بايثون">
+                </div>
+
+                <div class="form-group">
+                    <label>المادة الدراسية:</label>
+                    <select name="course_name" required>
+                        <option value="Python">أساسيات البرمجة (Python)</option>
+                        <option value="Cyber Security">مقدمة الأمن السيبراني</option>
+                        <option value="IT Essentials">أساسيات تكنولوجيا المعلومات</option>
+                        <option value="Math">الرياضيات الهندسية (Math)</option>
+                        <option value="Physics">الفيزياء العامة (Physics)</option>
+                        <option value="English">اللغة الإنجليزية</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>مدة الامتحان (بالدقائق):</label>
+                    <input type="number" name="duration_minutes" value="30" min="5" max="180" required>
+                </div>
+
+                <div class="form-group">
+                    <label>ملف الامتحان (PDF - اختياري لعرض الأسئلة كملف):</label>
+                    <input type="file" name="exam_pdf" accept=".pdf">
+                </div>
+
+                <button type="submit" class="btn-submit">حفظ ونشر الامتحان للطلاب</button>
+            </form>
+        </div>
+
+        <!-- 4. قسم الأنشطة والفعاليات -->
         <div id="events-tab" class="tab-content">
             <h3><i class="fa-solid fa-bullhorn"></i> إضافة نشاط أو فعالية جديدة</h3>
             <form method="POST" enctype="multipart/form-data">
@@ -187,7 +235,7 @@
             </form>
         </div>
 
-        <!-- 4. قسم التنبيهات والإشعارات الفورية -->
+        <!-- 5. قسم التنبيهات والإشعارات الفورية -->
         <div id="notifications-tab" class="tab-content">
             <h3><i class="fa-solid fa-paper-plane"></i> إرسال إشعار عام للطلاب</h3>
             <form method="POST" enctype="multipart/form-data">
@@ -211,6 +259,88 @@
                 </div>
                 <button type="submit" class="btn-submit">بث الإشعار فوراً</button>
             </form>
+        </div>
+
+        <!-- 6. قسم طلبات تسجيل الطلاب المعلقة -->
+        <div id="approvals-tab" class="tab-content">
+            <h3><i class="fa-solid fa-user-check"></i> طلبات تسجيل الطلاب المعلقة (تحتاج موافقة الأدمن)</h3>
+            
+            {% if pending_students %}
+                <table style="width: 100%; text-align: right; border-collapse: collapse; margin-top: 15px;">
+                    <thead>
+                        <tr style="background: rgba(0, 86, 179, 0.1);">
+                            <th style="padding: 12px; border-bottom: 2px solid var(--border-color);">اسم المستخدم</th>
+                            <th style="padding: 12px; border-bottom: 2px solid var(--border-color);">البريد الإلكتروني</th>
+                            <th style="padding: 12px; border-bottom: 2px solid var(--border-color);">الإجراء</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for student in pending_students %}
+                        <tr>
+                            <td style="padding: 12px; border-bottom: 1px solid var(--border-color);">{{ student.username }}</td>
+                            <td style="padding: 12px; border-bottom: 1px solid var(--border-color);">{{ student.email }}</td>
+                            <td style="padding: 12px; border-bottom: 1px solid var(--border-color);">
+                                <a href="{% url 'approve_student' student.id %}" style="background: #28a745; color: white; padding: 6px 14px; border-radius: 4px; text-decoration: none; font-weight: bold; display: inline-block;">موافقة وتفعيل</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <p style="color: var(--text-muted); margin-top: 15px;">لا توجد طلبات تسجيل معلقة حالياً.</p>
+            {% endif %}
+        </div>
+
+        <!-- 7. قسم متابعة تقدم الطلاب -->
+        <div id="progress-tab" class="tab-content">
+            <h3><i class="fa-solid fa-chart-line"></i> تقرير متابعة نشاط وتقدم الطلاب</h3>
+            
+            {% if students_progress_data %}
+                <div style="overflow-x: auto; margin-top: 15px;">
+                    <table style="width: 100%; text-align: right; border-collapse: collapse;">
+                        <thead>
+                            <tr style="background: rgba(0, 86, 179, 0.1);">
+                                <th style="padding: 12px; border-bottom: 2px solid var(--border-color);">اسم الطالب</th>
+                                <th style="padding: 12px; border-bottom: 2px solid var(--border-color);">البريد الإلكتروني</th>
+                                <th style="padding: 12px; border-bottom: 2px solid var(--border-color);">المحاضرات التي شاهدوها ✅</th>
+                                <th style="padding: 12px; border-bottom: 2px solid var(--border-color);">المحاضرات التي لم يشاهدوها بعد ❌</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in students_progress_data %}
+                            <tr>
+                                <td style="padding: 12px; border-bottom: 1px solid var(--border-color); font-weight: bold;">{{ item.student.username }}</td>
+                                <td style="padding: 12px; border-bottom: 1px solid var(--border-color); color: var(--text-muted);">{{ item.student.email }}</td>
+                                <td style="padding: 12px; border-bottom: 1px solid var(--border-color);">
+                                    {% if item.viewed_resources %}
+                                        <ul style="padding-right: 15px; margin: 0;">
+                                            {% for res in item.viewed_resources %}
+                                                <li style="color: #28a745; margin-bottom: 4px;">{{ res.title }} <small style="color: var(--text-muted);">({{ res.course.name }})</small></li>
+                                            {% endfor %}
+                                        </ul>
+                                    {% else %}
+                                        <span style="color: var(--text-muted);">لم يشاهد أي محاضرة بعد</span>
+                                    {% endif %}
+                                </td>
+                                <td style="padding: 12px; border-bottom: 1px solid var(--border-color);">
+                                    {% if item.unviewed_resources %}
+                                        <ul style="padding-right: 15px; margin: 0;">
+                                            {% for res in item.unviewed_resources %}
+                                                <li style="color: #dc3545; margin-bottom: 4px;">{{ res.title }} <small style="color: var(--text-muted);">({{ res.course.name }})</small></li>
+                                            {% endfor %}
+                                        </ul>
+                                    {% else %}
+                                        <span style="color: #28a745; font-weight: bold;">أتم جميع المحاضرات! 🎉</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <p style="color: var(--text-muted); margin-top: 15px;">لا توجد بيانات تقدم مسجلة للطلاب حالياً.</p>
+            {% endif %}
         </div>
 
     </div>

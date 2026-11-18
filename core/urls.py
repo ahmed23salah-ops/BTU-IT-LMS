@@ -16,8 +16,19 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from courses import views  
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', include('courses.urls')),  # ربط المنصة بالصفحة الرئيسية
+    
+    # مسارات الحسابات والتسجيل والدخول والخروج بالأسماء المضبوطة تماماً
+    path('login/', views.student_login, name='student_login'),
+    path('register/', views.student_register, name='student_register'),
+    path('verify/', views.verify_code_view, name='verify_code'),
+    path('logout/', views.student_logout, name='student_logout'),
+    
+    # مسار موافقة الأدمن على حساب الطالب الجديد
+    path('approve-student/<int:user_id>/', views.approve_student_view, name='approve_student'),
+    
+    path('', include('courses.urls')),  # ربط بقية مسارات التطبيق
 ]

@@ -50,6 +50,8 @@
         .btn-login:hover { background-color: white; color: var(--primary-color); }
         .btn-register { background-color: var(--accent-color); color: #000; }
         .btn-register:hover { background-color: #e0a800; }
+        .btn-logout { background-color: #dc3545; color: white; }
+        .btn-logout:hover { background-color: #c82333; }
 
         .hero { text-align: center; padding: 40px 20px 20px; max-width: 900px; margin: 0 auto; }
         .hero h2 { font-size: 2rem; margin-bottom: 12px; color: var(--text-color); }
@@ -57,7 +59,7 @@
         .badge-it { display: inline-block; background: var(--button-bg); color: white; padding: 4px 12px; border-radius: 12px; font-size: 0.85rem; margin-bottom: 15px; }
 
         .container { max-width: 1100px; margin: 20px auto 40px; padding: 0 20px; display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 25px; width: 100%; }
-        .card { background: var(--card-bg); border: 1px solid var(--border-color); padding: 30px 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); text-align: center; }
+        .card { background: var(--card-bg); border: 1px solid var(--border-color); padding: 30px 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); text-align: center; position: relative; }
         .card:hover { transform: translateY(-5px); box-shadow: 0 8px 25px rgba(0,0,0,0.1); }
         .card-icon { font-size: 2.5rem; color: var(--button-bg); margin-bottom: 15px; }
         .card h3 { margin-bottom: 10px; font-size: 1.25rem; }
@@ -65,16 +67,19 @@
         .card-btn { display: inline-block; width: 100%; background-color: var(--button-bg); color: white; padding: 10px; border-radius: 6px; text-decoration: none; font-weight: bold; border: none; cursor: pointer; text-align: center; }
         .card-btn:hover { background-color: var(--button-hover); }
 
-        /* Modal Styles */
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: var(--modal-bg); z-index: 1000; justify-content: center; align-items: center; padding: 20px; }
-        .modal-content { background-color: var(--card-bg); padding: 30px; border-radius: 12px; width: 100%; max-width: 400px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); position: relative; }
-        .close-btn { position: absolute; left: 20px; top: 15px; font-size: 1.5rem; cursor: pointer; color: var(--text-muted); }
-        .modal h3 { margin-bottom: 20px; text-align: center; color: var(--text-color); }
-        .form-group { margin-bottom: 15px; text-align: right; }
-        .form-group label { display: block; margin-bottom: 5px; font-size: 0.9rem; color: var(--text-color); }
-        .form-group input { width: 100%; padding: 10px 12px; border-radius: 6px; border: 1px solid var(--border-color); background-color: var(--bg-color); color: var(--text-color); font-size: 0.95rem; }
-        .submit-btn { width: 100%; padding: 11px; background-color: var(--button-bg); color: white; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; margin-top: 10px; }
-        .submit-btn:hover { background-color: var(--button-hover); }
+        /* ستايل الشارة (Badge) الجديدة للإشعارات داخل الكروت */
+        .new-badge {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            background-color: #dc3545;
+            color: white;
+            font-size: 0.75rem;
+            font-weight: bold;
+            padding: 3px 8px;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
 
         footer { margin-top: auto; text-align: center; padding: 20px; font-size: 0.85rem; color: var(--text-muted); border-top: 1px solid var(--border-color); }
     </style>
@@ -96,8 +101,16 @@
             <i class="fa-solid fa-moon" id="themeIcon"></i>
             <span id="themeText">الوضع الداكن</span>
         </button>
-        <button class="auth-btn btn-login" onclick="openModal('loginModal')">تسجيل الدخول</button>
-        <button class="auth-btn btn-register" onclick="openModal('registerModal')">إنشاء حساب</button>
+
+        {% if request.user.is_authenticated %}
+            <!-- لو الطالب مسجل دخول -->
+            <span style="color: white; font-weight: bold; font-size: 0.95rem;">أهلاً، {{ request.user.username }}</span>
+            <a href="{% url 'student_logout' %}" class="auth-btn btn-logout">تسجيل خروج</a>
+        {% else %}
+            <!-- لو لسه مش مسجل دخول -->
+            <a href="{% url 'student_login' %}" class="auth-btn btn-login">تسجيل الدخول</a>
+            <a href="{% url 'student_register' %}" class="auth-btn btn-register">إنشاء حساب</a>
+        {% endif %}
     </div>
   </header>
 
@@ -108,7 +121,7 @@
         <p>بوابتك المتكاملة لمتابعة المقررات الدراسية، الجداول، والتكليفات الخاصة بقسم تكنولوجيا المعلومات.</p>
     </section>
 
-    <!-- شريط التنبيهات والإشعارات المحدثة من لوحة تحكم الدكتور -->
+    <!-- شريط التنبيهات والإشعارات -->
     <div style="max-width: 1100px; margin: 0 auto 20px; padding: 0 20px; width: 100%;">
         <div style="background: var(--card-bg); border: 1px solid var(--border-color); border-right: 4px solid var(--accent-color); padding: 18px 22px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
             <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px; font-weight: bold; color: var(--text-color); font-size: 1.05rem;">
@@ -139,17 +152,50 @@
         </div>
     </div>
 
+    <!-- 🆕 قسم أحدث الامتحانات والاختبارات المتاحة -->
+    <div style="max-width: 1100px; margin: 0 auto 25px; padding: 0 20px; width: 100%;">
+        <div style="background: var(--card-bg); border: 1px solid var(--border-color); border-right: 4px solid #28a745; padding: 22px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
+            <h3 style="color: var(--primary-color); margin-bottom: 15px; display: flex; align-items: center; gap: 10px;">
+                <i class="fa-solid fa-file-shield" style="color: #28a745;"></i> أحدث الامتحانات والاختبارات المتاحة 📝
+            </h3>
+            
+            {% if exams %}
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 15px;">
+                    {% for exam in exams %}
+                        <div style="border: 1px solid var(--border-color); padding: 15px; border-radius: 8px; background: var(--bg-color);">
+                            <h4 style="margin-bottom: 8px; font-size: 1.1rem; color: var(--text-color);">{{ exam.title }}</h4>
+                            <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 5px;">المادة: {{ exam.course.name }}</p>
+                            <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 12px;">المدة: {{ exam.duration_minutes }} دقيقة</p>
+                            
+                            <a href="{% url 'take_exam' exam.id %}" style="display: inline-block; background: #28a745; color: white; padding: 8px 15px; border-radius: 5px; text-decoration: none; font-weight: bold; font-size: 0.9rem; text-align: center; width: 100%;">
+                                بدء الامتحان الآن 🚀
+                            </a>
+                        </div>
+                    {% endfor %}
+                </div>
+                <div style="text-align: left; margin-top: 15px;">
+                    <a href="{% url 'exams_list' %}" style="color: var(--button-bg); font-weight: bold; text-decoration: none; font-size: 0.95rem;">عرض كل الامتحانات السابقة...</a>
+                </div>
+            {% else %}
+                <p style="color: var(--text-muted); margin: 0;">لا توجد امتحانات متاحة في الوقت الحالي.</p>
+            {% endif %}
+        </div>
+    </div>
+
     <!-- Interactive Feature Cards -->
     <main class="container">
-        <!-- كارت المقررات الدراسية -->
+        <!-- كارت المقررات -->
         <div class="card">
+            {% if new_courses_count > 0 %}
+                <span class="new-badge">جديد ({{ new_courses_count }})</span>
+            {% endif %}
             <i class="fa-solid fa-book-open card-icon"></i>
             <h3>المقررات الدراسية</h3>
             <p>استعرض المحاضرات والمناهج الخاصة بالقسم.</p>
             <a href="{% url 'courses' %}" class="card-btn">تصفح المواد</a>
         </div>
 
-        <!-- كارت الجداول والمواعيد -->
+        <!-- كارت الجداول -->
         <div class="card">
             <i class="fa-solid fa-calendar-days card-icon"></i>
             <h3>الجداول والمواعيد</h3>
@@ -157,23 +203,29 @@
             <a href="{% url 'schedule' %}" class="card-btn">عرض الجدول</a>
         </div>
 
-        <!-- كارت فعاليات وأحداث الجامعة -->
+        <!-- كارت الفعاليات -->
         <div class="card">
+            {% if new_events_count > 0 %}
+                <span class="new-badge">جديد ({{ new_events_count }})</span>
+            {% endif %}
             <i class="fa-solid fa-calendar-star card-icon"></i>
             <h3>فعاليات وأحداث الجامعة</h3>
             <p>تابع الندوات، ورش العمل، والأنشطة الطلابية.</p>
             <a href="{% url 'events' %}" class="card-btn">عرض الفعاليات</a>
         </div>
 
-        <!-- كارت التكليفات والواجبات الأكاديمية -->
+        <!-- كارت التكليفات -->
         <div class="card">
+            {% if new_assignments_count > 0 %}
+                <span class="new-badge">جديد ({{ new_assignments_count }})</span>
+            {% endif %}
             <i class="fa-solid fa-file-lines card-icon"></i>
             <h3>التكليفات والواجبات</h3>
             <p>تابع المهام الدراسية وارفع ملفات الحلول الخاصة بك.</p>
             <a href="{% url 'assignments' %}" class="card-btn">عرض التكليفات</a>
         </div>
 
-        <!-- كارت محرر الأكواد البرمجية الجديد المربوط بالـ URL -->
+        <!-- كارت محرر الأكواد -->
         <div class="card">
             <i class="fa-solid fa-code card-icon"></i>
             <h3>محرر الأكواد أونلاين</h3>
@@ -181,60 +233,14 @@
             <a href="{% url 'python_compiler' %}" class="card-btn">فتح المحرر 🚀</a>
         </div>
 
-        <!-- كارت المنتدى الأكاديمي -->
-<div class="card">
-    <i class="fa-solid fa-comments card-icon"></i>
-    <h3>المنتدى الأكاديمي</h3>
-    <p>طرح الأسئلة والنقاشات البرمجية وتبادل الردود مع الزملاء والدكتور.</p>
-    <a href="{% url 'forum' %}" class="card-btn">دخول المنتدى 💬</a>
-</div>
+        <!-- كارت المنتدى -->
+        <div class="card">
+            <i class="fa-solid fa-comments card-icon"></i>
+            <h3>المنتدى الأكاديمي</h3>
+            <p>طرح الأسئلة والنقاشات البرمجية وتبادل الردود مع الزملاء والدكتور.</p>
+            <a href="{% url 'forum' %}" class="card-btn">دخول المنتدى 💬</a>
+        </div>
     </main>
-
-    <!-- Modal: Register -->
-    <div class="modal" id="registerModal">
-        <div class="modal-content">
-            <span class="close-btn" onclick="closeModal('registerModal')">&times;</span>
-            <h3>إنشاء حساب جديد</h3>
-            <form onsubmit="handleRegister(event)">
-                <div class="form-group">
-                    <label>الاسم الكامل:</label>
-                    <input type="text" id="regName" required placeholder="أدخل اسمك ">
-                </div>
-                <div class="form-group">
-                    <label>رقم الموبايل:</label>
-                    <input type="tel" id="regPhone" required placeholder="01xxxxxxxxx">
-                </div>
-                <div class="mb-3">
-                    <label>البريد الإلكتروني:</label>
-                    <input type="email" name="email" required placeholder="example@gmail.com" class="form-control">
-                </div>
-                <div class="form-group">
-                    <label>كلمة السر:</label>
-                    <input type="password" id="regPassword" required placeholder="أدخل كلمة السر">
-                </div>
-                <button type="submit" class="submit-btn">إتمام إنشاء الحساب</button>
-            </form>
-        </div>
-    </div>
-
-    <!-- Modal: Login -->
-    <div class="modal" id="loginModal">
-        <div class="modal-content">
-            <span class="close-btn" onclick="closeModal('loginModal')">&times;</span>
-            <h3>تسجيل الدخول</h3>
-            <form onsubmit="handleLogin(event)">
-                <div class="form-group">
-                    <label>رقم الموبايل:</label>
-                    <input type="tel" id="loginPhone" required placeholder="01xxxxxxxxx">
-                </div>
-                <div class="form-group">
-                    <label>كلمة السر:</label>
-                    <input type="password" id="loginPassword" required placeholder="أدخل كلمة السر الخاصة بك">
-                </div>
-                <button type="submit" class="submit-btn">دخول للمنصة</button>
-            </form>
-        </div>
-    </div>
 
     <footer>
         <p>جميع الحقوق محفوظة &copy; 2026 - جامعة بني سويف التكنولوجية (قسم تكنولوجيا المعلومات)</p>
@@ -264,36 +270,6 @@
             document.body.setAttribute('data-theme', 'dark');
             document.getElementById('themeIcon').className = 'fa-solid fa-sun';
             document.getElementById('themeText').textContent = 'الوضع المضيء';
-        }
-
-        function openModal(id) {
-            document.getElementById(id).style.display = 'flex';
-        }
-
-        function closeModal(id) {
-            document.getElementById(id).style.display = 'none';
-        }
-
-        window.onclick = function(event) {
-            if (event.target.classList.contains('modal')) {
-                event.target.style.display = 'none';
-            }
-        }
-
-        function handleRegister(e) {
-            e.preventDefault();
-            const name = document.getElementById('regName').value;
-            const phone = document.getElementById('regPhone').value;
-            alert(`مرحباً بك يا ${name}! تم إنشاء الحساب بنجاح برقم الموبايل: ${phone}`);
-            closeModal('registerModal');
-            openModal('loginModal');
-        }
-
-        function handleLogin(e) {
-            e.preventDefault();
-            const phone = document.getElementById('loginPhone').value;
-            alert(`أهلاً بك مجدداً! تم تسجيل الدخول بنجاح برقم الموبايل: ${phone}`);
-            closeModal('loginModal');
         }
     </script>
 </body>

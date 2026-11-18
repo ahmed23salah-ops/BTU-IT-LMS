@@ -30,6 +30,13 @@ urlpatterns = [
     
     # لوحة التحكم الشاملة (للدكتور والمسؤول)
     path('instructor/', views.instructor_dashboard, name='instructor_dashboard'),
+
+    # ==========================================
+    # 🆕 مسارات نظام الامتحانات والاختبارات 📝
+    # ==========================================
+    path('exams/', views.exams_list_view, name='exams_list'),
+    path('exam/<int:exam_id>/', views.take_exam_view, name='take_exam'),
+    path('exam/result/<int:submission_id>/', views.exam_result_view, name='exam_result'),
 ]
 
 # تفعيل مسار ملفات الـ Media في وضع التطوير المحلي

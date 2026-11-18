@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>نتيجة الامتحان</title>
+</head>
+<body>
+    <h1>نتيجة امتحان: {{ submission.exam.title }}</h1>
+    <p>الطالب: {{ submission.student.username }}</p>
+    <h2>الدرجة الحاصل عليها: {{ submission.score }}</h2>
+    <p>وقت التسليم: {{ submission.submitted_at }}</p>
+    <a href="{% url 'home' %}">العودة للرئيسية</a>
+</body>
+</html>

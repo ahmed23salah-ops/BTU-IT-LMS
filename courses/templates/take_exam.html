@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ exam.title }}</title>
+</head>
+<body style="user-select: none;"> <!-- يمنع تحديد وتظليل النص -->
+
+    <h1>{{ exam.title }}</h1>
+    <div style="font-size: 20px; color: red; font-weight: bold;">
+        الوقت المتبقي: <span id="time"></span>
+    </div>
+
+    {% if exam.pdf_file %}
+        <div style="margin: 20px 0;">
+            <iframe src="{{ exam.pdf_file.url }}" width="100%" height="400px"></iframe>
+        </div>
+    {% endif %}
+
+    <form method="POST" id="examForm">
+        {% csrf_token %}
+        {% for q in questions %}
+            <div style="margin-bottom: 20px; border: 1px solid #ddd; padding: 15px;">
+                <p><b>السؤال {{ forloop.counter }}:</b> {{ q.text }} (درجة السؤال: {{ q.grade }})</p>
+                
+                {% if q.q_type == 'mcq' %}
+                    <label><input type="radio" name="question_{{ q.id }}" value="{{ q.option_a }}"> {{ q.option_a }}</label><br>
+                    <label><input type="radio" name="question_{{ q.id }}" value="{{ q.option_b }}"> {{ q.option_b }}</label><br>
+                    {% if q.option_c %}<label><input type="radio" name="question_{{ q.id }}" value="{{ q.option_c }}"> {{ q.option_c }}</label><br>{% endif %}
+                    {% if q.option_d %}<label><input type="radio" name="question_{{ q.id }}" value="{{ q.option_d }}"> {{ q.option_d }}</label><br>{% endif %}
+                {% else %}
+                    <textarea name="question_{{ q.id }}" rows="4" style="width: 100%;" placeholder="اكتب إجابتك المقالية هنا..."></textarea>
+                {% endif %}
+            </div>
+        {% endfor %}
+        
+        <button type="submit" style="padding: 10px 20px; background: green; color: white; font-size: 16px;">تسليم الامتحان</button>
+    </form>
+
+    <!-- سكربت الحماية والوقت التنازلي -->
+    <script>
+        // 1. منع كليك يمين وفحص العناصر والتصوير
+        document.addEventListener('contextmenu', e => e.preventDefault());
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'F12' || (e.ctrlKey && e.shiftKey && ['I', 'J', 'C'].includes(e.key)) || (e.ctrlKey && e.key === 'U') || e.key === 'PrintScreen') {
+                e.preventDefault();
+                alert("عفواً، التصوير أو فحص الصفحة ممنوع أثناء الامتحان!");
+                return false;
+            }
+        });
+
+        // 2. كشف خروج الطالب من النافذة (Tab Switching)
+        window.addEventListener('blur', function() {
+            alert("تحذير! لقد خرجت من نافذة الامتحان، سيتم تسليم الورقة تلقائياً إذا تكرر الأمر.");
+        });
+
+        // 3. عداد الوقت التنازلي وتدشين التسليم التلقائي
+        let duration = {{ exam.duration_minutes }} * 60;
+        let display = document.querySelector('#time');
+        
+        function startTimer(duration, display) {
+            let timer = duration, minutes, seconds;
+            let interval = setInterval(function () {
+                minutes = parseInt(timer / 60, 10);
+                seconds = parseInt(timer % 60, 10);
+
+                minutes = minutes < 10 ? "0" + minutes : minutes;
+                seconds = seconds < 10 ? "0" + seconds : seconds;
+
+                display.textContent = minutes + ":" + seconds;
+
+                if (--timer < 0) {
+                    clearInterval(interval);
+                    alert("انتهى وقت الامتحان! سيتم تسليم الإجابات تلقائياً.");
+                    document.getElementById("examForm").submit();
+                }
+            }, 1000);
+        }
+
+        window.onload = function () {
+            startTimer(duration, display);
+        };
+    </script>
+</body>
+</html>
